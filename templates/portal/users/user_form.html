@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Create User Account — Ashoka FMS Enterprise{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto space-y-6">
+    <!-- Breadcrumb & Top Bar -->
+    <div class="flex items-center justify-between">
+        <a href="{% url 'portal:user_list' %}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition">
+            <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+            <span>Back to User Management</span>
+        </a>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold
+            {% if is_superadmin %}bg-purple-50 text-purple-800 border border-purple-200/60
+            {% else %}bg-indigo-50 text-brand-800 border border-brand-200/60{% endif %}">
+            <span class="material-symbols-outlined text-[15px]">verified_user</span>
+            <span>{% if is_superadmin %}Superadmin Access{% else %}{{ current_user_dept }} Department Admin{% endif %}</span>
+        </span>
+    </div>
+
+    <!-- User Creation Card -->
+    <div class="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200/80 shadow-xs">
+        <div class="flex items-center gap-2 pb-3 mb-6 border-b border-slate-100">
+            <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-brand-600 border border-indigo-100">
+                <span class="material-symbols-outlined text-lg">person_add</span>
+            </div>
+            <div>
+                <h1 class="font-display font-bold text-slate-900 text-lg">Create New Staff Account</h1>
+                <p class="text-xs text-slate-400">
+                    {% if is_superadmin %}
+                        Superadmin provisioning: configure departmental role and administrative privileges.
+                    {% else %}
+                        Create a staff account strictly for the <strong>{{ current_user_dept }} Department</strong>.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <form method="post" action="{% url 'portal:user_create' %}" class="space-y-4">
+            {% csrf_token %}
+
+            <!-- Role Selection -->
+            {% if is_superadmin %}
+            <div class="p-4 rounded-xl bg-purple-50/50 border border-purple-100 space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                        Target Department / Role <span class="text-rose-500">*</span>
+                    </label>
+                    <select name="role" required 
+                            class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all font-semibold">
+                        {% for code, label in role_choices %}
+                            <option value="{{ code }}">{{ label }} ({{ code }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="inline-flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-800 select-none">
+                        <input type="checkbox" name="is_department_admin" value="1" class="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500">
+                        <span>Assign as Department Administrator (Can manage users in this department)</span>
+                    </label>
+                    <p class="text-[11px] text-slate-500 mt-0.5 ml-6">
+                        Department Admins can create user accounts and reset passwords for staff inside their assigned department.
+                    </p>
+                </div>
+            </div>
+            {% else %}
+            <!-- Locked to Department Admin's department -->
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">Assigned Department</span>
+                    <span class="font-display font-bold text-slate-800 text-sm">{{ current_user_dept }} Department Staff</span>
+                </div>
+                <span class="text-xs font-mono text-slate-400 bg-white px-2 py-1 rounded border border-slate-200">Fixed</span>
+            </div>
+            {% endif %}
+
+            <!-- Account Details -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                        Username <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="text" name="username" required placeholder="e.g. jatin.patil" 
+                           class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 font-mono placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                        Email Address <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="email" name="email" required placeholder="e.g. jatin.patil@aef.edu.in" 
+                           class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">First Name</label>
+                    <input type="text" name="first_name" placeholder="First Name" 
+                           class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Last Name</label>
+                    <input type="text" name="last_name" placeholder="Last Name" 
+                           class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Primary Educational Unit</label>
+                    <select name="unit_id" 
+                            class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
+                        <option value="">- Select Unit (Optional) -</option>
+                        {% for u in units %}
+                            <option value="{{ u.id }}">{{ u.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Phone Number</label>
+                    <input type="text" name="phone" placeholder="e.g. 9822012345" 
+                           class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 font-mono placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
+                </div>
+            </div>
+
+            <!-- Password Credentials -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                        Initial Password <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="password" name="password" required minlength="6" placeholder="Min. 6 characters" 
+                           class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                        Confirm Password <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="password" name="confirm_password" required minlength="6" placeholder="Confirm password" 
+                           class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100">
+                <a href="{% url 'portal:user_list' %}" 
+                   class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors">
+                    Cancel
+                </a>
+                <button type="submit" 
+                        class="bg-brand-600 hover:bg-brand-500 active:bg-brand-700 text-white font-semibold text-xs px-5 py-2.5 rounded-xl shadow-xs transition-all inline-flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[17px]">person_add</span>
+                    <span>Create User Account</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

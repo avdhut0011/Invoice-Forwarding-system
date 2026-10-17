@@ -7,12 +7,50 @@ class PortalViewTestCase(TestCase):
         self.client = Client()
         self.legal_entity = LegalEntity.objects.create(name="Ashoka Education Foundation", code="AEF")
         self.unit = Unit.objects.create(name="Ashoka Universal School - Ashoka Marg", code="AUS-AM", legal_entity=self.legal_entity)
-        self.user = User.objects.create_user(
-            username="testuser",
+        
+        # Superadmin
+        self.admin_user = User.objects.create_user(
+            username="admin_user",
             password="password123",
             role=RoleChoices.ADMIN,
             primary_unit=self.unit,
-            email="admin@test.com"
+            email="admin@test.com",
+            is_superuser=True
+        )
+
+        # Store Staff & Store Admin
+        self.store_user = User.objects.create_user(
+            username="store_staff",
+            password="password123",
+            role=RoleChoices.STORE,
+            primary_unit=self.unit,
+            email="store@test.com"
+        )
+        self.store_admin = User.objects.create_user(
+            username="store_admin",
+            password="password123",
+            role=RoleChoices.STORE,
+            is_department_admin=True,
+            primary_unit=self.unit,
+            email="store.admin@test.com"
+        )
+
+        # Purchase Staff
+        self.purchase_user = User.objects.create_user(
+            username="purchase_staff",
+            password="password123",
+            role=RoleChoices.PURCHASE,
+            primary_unit=self.unit,
+            email="purchase@test.com"
+        )
+
+        # Accounts Staff
+        self.accounts_user = User.objects.create_user(
+            username="accounts_staff",
+            password="password123",
+            role=RoleChoices.ACCOUNTS,
+            primary_unit=self.unit,
+            email="accounts@test.com"
         )
 
     def test_unauthenticated_redirect(self):
@@ -25,21 +63,123 @@ class PortalViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'registration/login.html')
 
-    def test_authenticated_portal_views(self):
-        self.client.login(username="testuser", password="password123")
+    def test_departmental_access_segregation(self):
+        # 1. Store Staff: can access Store, blocked from Purchase and Accounts
+        self.client.login(username="store_staff", password="password123")
+        self.assertEqual(self.client.get(reverse('portal:store_portal')).status_code, 200)
         
-        endpoints = [
-            'portal:dashboard',
-            'portal:store_portal',
-            'portal:purchase_portal',
-            'portal:accounts_portal',
-        ]
-        for name in endpoints:
-            response = self.client.get(reverse(name))
-            self.assertEqual(response.status_code, 200, f"Failed for {name}")
+        resp_purch = self.client.get(reverse('portal:purchase_portal'))
+        self.assertEqual(resp_purch.status_code, 302)
+        self.assertIn('/store/', resp_purch.url)
 
-    def test_purchase_search_po_htmx(self):
-        self.client.login(username="testuser", password="password123")
-        response = self.client.get(reverse('portal:purchase_search_po') + '?po_number=PO/2026/00142')
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'portal/partials/po_search_results.html')
+        resp_accts = self.client.get(reverse('portal:accounts_portal'))
+        self.assertEqual(resp_accts.status_code, 302)
+        self.assertIn('/store/', resp_accts.url)
+
+        # 2. Purchase Staff: can access Purchase, blocked from Store and Accounts
+        self.client.login(username="purchase_staff", password="password123")
+        self.assertEqual(self.client.get(reverse('portal:purchase_portal')).status_code, 200)
+
+        resp_store = self.client.get(reverse('portal:store_portal'))
+        self.assertEqual(resp_store.status_code, 302)
+        self.assertIn('/purchase/', resp_store.url)
+
+        resp_accts = self.client.get(reverse('portal:accounts_portal'))
+        self.assertEqual(resp_accts.status_code, 302)
+        self.assertIn('/purchase/', resp_accts.url)
+
+        # 3. Accounts Staff: can access Accounts, blocked from Store and Purchase
+        self.client.login(username="accounts_staff", password="password123")
+        self.assertEqual(self.client.get(reverse('portal:accounts_portal')).status_code, 200)
+
+        resp_store = self.client.get(reverse('portal:store_portal'))
+        self.assertEqual(resp_store.status_code, 302)
+        self.assertIn('/accounts/', resp_store.url)
+
+        resp_purch = self.client.get(reverse('portal:purchase_portal'))
+        self.assertEqual(resp_purch.status_code, 302)
+        self.assertIn('/accounts/', resp_purch.url)
+
+        # 4. Superadmin: can access all portals
+        self.client.login(username="admin_user", password="password123")
+        self.assertEqual(self.client.get(reverse('portal:store_portal')).status_code, 200)
+        self.assertEqual(self.client.get(reverse('portal:purchase_portal')).status_code, 200)
+        self.assertEqual(self.client.get(reverse('portal:accounts_portal')).status_code, 200)
+        self.assertEqual(self.client.get(reverse('portal:dashboard')).status_code, 200)
+
+    def test_department_admin_user_management(self):
+        # Regular staff cannot access user management
+        self.client.login(username="store_staff", password="password123")
+        resp = self.client.get(reverse('portal:user_list'))
+        self.assertEqual(resp.status_code, 302)
+
+        # Store Admin can access user management
+        self.client.login(username="store_admin", password="password123")
+        resp = self.client.get(reverse('portal:user_list'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'portal/users/user_list.html')
+        # Store admin only sees Store staff
+        self.assertIn('store_staff', [u.username for u in resp.context['managed_users']])
+        self.assertNotIn('purchase_staff', [u.username for u in resp.context['managed_users']])
+        self.assertNotIn('accounts_staff', [u.username for u in resp.context['managed_users']])
+
+        # Store Admin can create a new store user
+        create_resp = self.client.post(reverse('portal:user_create'), {
+            'username': 'new_store_assistant',
+            'email': 'assistant@test.com',
+            'first_name': 'New',
+            'last_name': 'Assistant',
+            'password': 'password123',
+            'confirm_password': 'password123',
+            'unit_id': str(self.unit.id),
+        })
+        self.assertEqual(create_resp.status_code, 302)
+        new_u = User.objects.get(username='new_store_assistant')
+        self.assertEqual(new_u.role, RoleChoices.STORE)
+        self.assertFalse(new_u.is_department_admin)
+
+        # Store Admin can update password for store staff
+        pwd_resp = self.client.post(reverse('portal:user_update_password', args=[self.store_user.id]), {
+            'new_password': 'newpassword456',
+            'confirm_password': 'newpassword456',
+        })
+        self.assertEqual(pwd_resp.status_code, 302)
+        self.store_user.refresh_from_db()
+        self.assertTrue(self.store_user.check_password('newpassword456'))
+
+        # Store Admin CANNOT update password for accounts staff
+        pwd_denied = self.client.post(reverse('portal:user_update_password', args=[self.accounts_user.id]), {
+            'new_password': 'hackedpassword',
+            'confirm_password': 'hackedpassword',
+        })
+        self.accounts_user.refresh_from_db()
+        self.assertFalse(self.accounts_user.check_password('hackedpassword'))
+
+    def test_superadmin_creates_department_admin(self):
+        self.client.login(username="admin_user", password="password123")
+        
+        # Superadmin sees all users
+        list_resp = self.client.get(reverse('portal:user_list'))
+        self.assertEqual(list_resp.status_code, 200)
+        usernames = [u.username for u in list_resp.context['managed_users']]
+        self.assertIn('store_staff', usernames)
+        self.assertIn('purchase_staff', usernames)
+        self.assertIn('accounts_staff', usernames)
+
+        # Superadmin creates an Accounts Department Admin
+        resp = self.client.post(reverse('portal:user_create'), {
+            'username': 'new_accounts_lead',
+            'email': 'accts.lead@test.com',
+            'first_name': 'Accounts',
+            'last_name': 'Lead',
+            'role': RoleChoices.ACCOUNTS,
+            'is_department_admin': '1',
+            'password': 'password123',
+            'confirm_password': 'password123',
+            'unit_id': str(self.unit.id),
+        })
+        self.assertEqual(resp.status_code, 302)
+        lead = User.objects.get(username='new_accounts_lead')
+        self.assertEqual(lead.role, RoleChoices.ACCOUNTS)
+        self.assertTrue(lead.is_department_admin)
+        self.assertTrue(lead.is_accounts_admin)

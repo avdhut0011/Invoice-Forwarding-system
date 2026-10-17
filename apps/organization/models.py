@@ -49,26 +49,55 @@ class User(AbstractUser):
     primary_unit = models.ForeignKey(Unit, on_delete=models.SET_NULL, null=True, blank=True, related_name='primary_users')
     phone = models.CharField(max_length=30, blank=True, null=True)
     department = models.CharField(max_length=100, blank=True, null=True)
+    is_department_admin = models.BooleanField(default=False, help_text="Grants user management rights within user's department.")
 
     def __str__(self):
         full_name = self.get_full_name()
         return full_name if full_name else self.username
 
     @property
+    def is_superadmin(self):
+        return self.is_superuser or self.role == RoleChoices.ADMIN
+
+    @property
     def is_store_staff(self):
-        return self.role in [RoleChoices.STORE, RoleChoices.ADMIN]
+        return self.role == RoleChoices.STORE or self.is_superadmin
 
     @property
     def is_purchase_staff(self):
-        return self.role in [RoleChoices.PURCHASE, RoleChoices.ADMIN]
+        return self.role == RoleChoices.PURCHASE or self.is_superadmin
 
     @property
     def is_accounts_staff(self):
-        return self.role in [RoleChoices.ACCOUNTS, RoleChoices.ADMIN]
+        return self.role == RoleChoices.ACCOUNTS or self.is_superadmin
 
     @property
     def is_manager_or_admin(self):
         return self.role in [RoleChoices.MANAGER, RoleChoices.ADMIN] or self.is_superuser
+
+    @property
+    def is_store_admin(self):
+        return self.is_superadmin or (self.role == RoleChoices.STORE and self.is_department_admin)
+
+    @property
+    def is_purchase_admin(self):
+        return self.is_superadmin or (self.role == RoleChoices.PURCHASE and self.is_department_admin)
+
+    @property
+    def is_accounts_admin(self):
+        return self.is_superadmin or (self.role == RoleChoices.ACCOUNTS and self.is_department_admin)
+
+    @property
+    def can_manage_users(self):
+        return self.is_superadmin or self.is_department_admin
+
+    @property
+    def managed_department(self):
+        if self.is_superadmin:
+            return 'ALL'
+        if self.is_department_admin:
+            return self.role
+        return None
 
 class UnitAccess(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

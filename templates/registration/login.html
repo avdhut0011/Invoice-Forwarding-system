@@ -140,44 +140,88 @@
             </form>
 
             <!-- 1-Click Fast Role Switcher -->
-            <div class="mt-8 pt-6 border-t border-slate-100">
-                <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2.5 flex items-center justify-between">
-                    <span>Quick Select Test Credentials</span>
+            <div class="mt-8 pt-6 border-t border-slate-100 space-y-3">
+                <div class="flex items-center justify-between text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                    <span>1-Click Test Credentials</span>
                     <span class="text-[10px] text-slate-400 font-mono">password123</span>
                 </div>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-                    <button type="button" onclick="fillCreds('chandrashekhar')" 
-                            class="p-2 rounded-xl border border-slate-200/80 hover:border-brand-300 hover:bg-brand-50/40 text-left transition-all group">
-                        <div class="font-semibold text-slate-900 group-hover:text-brand-700 flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 rounded-full bg-brand-500"></span>
-                            <span>Store</span>
-                        </div>
-                        <div class="text-[10px] text-slate-400 font-mono truncate mt-0.5">chandrashekhar</div>
-                    </button>
-                    <button type="button" onclick="fillCreds('vishal')" 
-                            class="p-2 rounded-xl border border-slate-200/80 hover:border-brand-300 hover:bg-brand-50/40 text-left transition-all group">
-                        <div class="font-semibold text-slate-900 group-hover:text-brand-700 flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 rounded-full bg-brand-500"></span>
-                            <span>Purchase</span>
-                        </div>
-                        <div class="text-[10px] text-slate-400 font-mono truncate mt-0.5">vishal</div>
-                    </button>
-                    <button type="button" onclick="fillCreds('accounts')" 
-                            class="p-2 rounded-xl border border-slate-200/80 hover:border-brand-300 hover:bg-brand-50/40 text-left transition-all group">
-                        <div class="font-semibold text-slate-900 group-hover:text-brand-700 flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 rounded-full bg-brand-500"></span>
-                            <span>Accounts</span>
-                        </div>
-                        <div class="text-[10px] text-slate-400 font-mono truncate mt-0.5">accounts</div>
-                    </button>
-                    <button type="button" onclick="fillCreds('manager')" 
-                            class="p-2 rounded-xl border border-slate-200/80 hover:border-brand-300 hover:bg-brand-50/40 text-left transition-all group">
-                        <div class="font-semibold text-slate-900 group-hover:text-brand-700 flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 rounded-full bg-brand-500"></span>
-                            <span>Manager</span>
-                        </div>
-                        <div class="text-[10px] text-slate-400 font-mono truncate mt-0.5">manager</div>
-                    </button>
+
+                <!-- Row 1: Administrators -->
+                <div>
+                    <span class="text-[10px] font-semibold text-purple-700 uppercase tracking-wider block mb-1.5">Superadmin &amp; Department Admins:</span>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                        <button type="button" onclick="fillCreds('admin')" 
+                                class="p-2 rounded-xl border border-purple-200/80 bg-purple-50/40 hover:bg-purple-100/60 text-left transition-all group">
+                            <div class="font-semibold text-purple-900 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-purple-600"></span>
+                                <span>Superadmin</span>
+                            </div>
+                            <div class="text-[10px] text-purple-600 font-mono truncate mt-0.5">admin</div>
+                        </button>
+                        <button type="button" onclick="fillCreds('store_admin')" 
+                                class="p-2 rounded-xl border border-amber-200/80 bg-amber-50/40 hover:bg-amber-100/60 text-left transition-all group">
+                            <div class="font-semibold text-amber-900 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-600"></span>
+                                <span>Store Admin</span>
+                            </div>
+                            <div class="text-[10px] text-amber-700 font-mono truncate mt-0.5">store_admin</div>
+                        </button>
+                        <button type="button" onclick="fillCreds('purchase_admin')" 
+                                class="p-2 rounded-xl border border-blue-200/80 bg-blue-50/40 hover:bg-blue-100/60 text-left transition-all group">
+                            <div class="font-semibold text-blue-900 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+                                <span>Purch. Admin</span>
+                            </div>
+                            <div class="text-[10px] text-blue-700 font-mono truncate mt-0.5">purchase_admin</div>
+                        </button>
+                        <button type="button" onclick="fillCreds('accounts_admin')" 
+                                class="p-2 rounded-xl border border-emerald-200/80 bg-emerald-50/40 hover:bg-emerald-100/60 text-left transition-all group">
+                            <div class="font-semibold text-emerald-900 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                                <span>Accts Admin</span>
+                            </div>
+                            <div class="text-[10px] text-emerald-700 font-mono truncate mt-0.5">accounts_admin</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Row 2: Department Staff -->
+                <div>
+                    <span class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block mb-1.5">Department Staff:</span>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                        <button type="button" onclick="fillCreds('chandrashekhar')" 
+                                class="p-2 rounded-xl border border-slate-200/80 hover:border-brand-300 hover:bg-brand-50/40 text-left transition-all group">
+                            <div class="font-semibold text-slate-900 group-hover:text-brand-700 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                <span>Store Staff</span>
+                            </div>
+                            <div class="text-[10px] text-slate-400 font-mono truncate mt-0.5">chandrashekhar</div>
+                        </button>
+                        <button type="button" onclick="fillCreds('vishal')" 
+                                class="p-2 rounded-xl border border-slate-200/80 hover:border-brand-300 hover:bg-brand-50/40 text-left transition-all group">
+                            <div class="font-semibold text-slate-900 group-hover:text-brand-700 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                <span>Purchase Staff</span>
+                            </div>
+                            <div class="text-[10px] text-slate-400 font-mono truncate mt-0.5">vishal</div>
+                        </button>
+                        <button type="button" onclick="fillCreds('accounts')" 
+                                class="p-2 rounded-xl border border-slate-200/80 hover:border-brand-300 hover:bg-brand-50/40 text-left transition-all group">
+                            <div class="font-semibold text-slate-900 group-hover:text-brand-700 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                <span>Accounts Staff</span>
+                            </div>
+                            <div class="text-[10px] text-slate-400 font-mono truncate mt-0.5">accounts</div>
+                        </button>
+                        <button type="button" onclick="fillCreds('manager')" 
+                                class="p-2 rounded-xl border border-slate-200/80 hover:border-brand-300 hover:bg-brand-50/40 text-left transition-all group">
+                            <div class="font-semibold text-slate-900 group-hover:text-brand-700 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                <span>Manager</span>
+                            </div>
+                            <div class="text-[10px] text-slate-400 font-mono truncate mt-0.5">manager</div>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

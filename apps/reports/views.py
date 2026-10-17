@@ -8,8 +8,9 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Sum, Q
 from apps.receipts.models import GoodsReceipt, ReceiptStatusChoices
 from apps.invoices.models import Invoice, InvoiceAllocation
+from apps.portal.decorators import executive_or_admin_required
 
-@login_required
+@executive_or_admin_required
 def reports_summary_view(request):
     """
     Renders an interactive summary dashboard for reporting with date filtering.
@@ -53,7 +54,7 @@ def reports_summary_view(request):
     }
     return render(request, 'reports/summary.html', context)
 
-@login_required
+@executive_or_admin_required
 def export_excel_report(request):
     """
     Generates a 3-tab professional Excel (.xlsx) report matching the FMS specification:

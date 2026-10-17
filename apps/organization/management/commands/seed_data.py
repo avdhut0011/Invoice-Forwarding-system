@@ -77,32 +77,36 @@ class Command(BaseCommand):
 
         # 5. Users
         users_config = [
-            # Store staff
-            ("chandrashekhar", "Chandrashekhar", "Aher", "chandrashekhar.aher@ausindia.org", RoleChoices.STORE),
-            ("nikita", "Nikita", "Shelke", "nikita.shelke@ausindia.org", RoleChoices.STORE),
-            ("mukesh", "Mukesh", "Jadhav", "mukesh.jadhav@ausindia.org", RoleChoices.STORE),
-            ("shrikant", "Shrikant", "Zadbuke", "shrikant.zadbuke@ashokaglobalacademy.com", RoleChoices.STORE),
-            ("kavita", "Kavita", "Jadhav", "kavita.jadhav@ausindia.org", RoleChoices.STORE),
-            ("rohan", "Rohan", "Brahmankar", "rohan.bramhankar@ausindia.org", RoleChoices.STORE),
-            # Purchase staff
-            ("vishal", "Vishal", "Khairnar", "vishal.khairnar@aef.edu.in", RoleChoices.PURCHASE),
-            ("vilas", "Vilas", "Dhumal", "vilas.dhumal@aef.edu.in", RoleChoices.PURCHASE),
-            ("ashwin", "Ashwin", "Khairnar", "ashwin.khairnar@aef.edu.in", RoleChoices.PURCHASE),
-            ("vishwanath", "Vishwanath", "Srivastav", "vishwanath.srivastav@aef.edu.in", RoleChoices.PURCHASE),
-            ("sagar", "Sagar", "Tak", "sagar.tak@aef.edu.in", RoleChoices.PURCHASE),
-            ("dipali", "Dipali", "Nikumbh", "dipali.nikumbh@aef.edu.in", RoleChoices.PURCHASE),
-            ("prashant", "Prashant", "Joshi", "prashant.joshi@ausindia.org", RoleChoices.PURCHASE),
-            ("alankar", "Alankar", "Wadgaonkar", "alankar.wadgaonkar@ausindia.org", RoleChoices.PURCHASE),
-            # Accounts
-            ("accounts", "Accounts", "Department", "accounts@aef.edu.in", RoleChoices.ACCOUNTS),
+            # Store staff & Store Admin
+            ("chandrashekhar", "Chandrashekhar", "Aher", "chandrashekhar.aher@ausindia.org", RoleChoices.STORE, False),
+            ("store_admin", "Store", "Administrator", "store.admin@aef.edu.in", RoleChoices.STORE, True),
+            ("nikita", "Nikita", "Shelke", "nikita.shelke@ausindia.org", RoleChoices.STORE, False),
+            ("mukesh", "Mukesh", "Jadhav", "mukesh.jadhav@ausindia.org", RoleChoices.STORE, False),
+            ("shrikant", "Shrikant", "Zadbuke", "shrikant.zadbuke@ashokaglobalacademy.com", RoleChoices.STORE, False),
+            ("kavita", "Kavita", "Jadhav", "kavita.jadhav@ausindia.org", RoleChoices.STORE, False),
+            ("rohan", "Rohan", "Brahmankar", "rohan.bramhankar@ausindia.org", RoleChoices.STORE, False),
+            # Purchase staff & Purchase Admin
+            ("vishal", "Vishal", "Khairnar", "vishal.khairnar@aef.edu.in", RoleChoices.PURCHASE, False),
+            ("purchase_admin", "Purchase", "Administrator", "purchase.admin@aef.edu.in", RoleChoices.PURCHASE, True),
+            ("vilas", "Vilas", "Dhumal", "vilas.dhumal@aef.edu.in", RoleChoices.PURCHASE, False),
+            ("ashwin", "Ashwin", "Khairnar", "ashwin.khairnar@aef.edu.in", RoleChoices.PURCHASE, False),
+            ("vishwanath", "Vishwanath", "Srivastav", "vishwanath.srivastav@aef.edu.in", RoleChoices.PURCHASE, False),
+            ("sagar", "Sagar", "Tak", "sagar.tak@aef.edu.in", RoleChoices.PURCHASE, False),
+            ("dipali", "Dipali", "Nikumbh", "dipali.nikumbh@aef.edu.in", RoleChoices.PURCHASE, False),
+            ("prashant", "Prashant", "Joshi", "prashant.joshi@ausindia.org", RoleChoices.PURCHASE, False),
+            ("alankar", "Alankar", "Wadgaonkar", "alankar.wadgaonkar@ausindia.org", RoleChoices.PURCHASE, False),
+            # Accounts & Accounts Admin
+            ("accounts", "Accounts", "Department", "accounts@aef.edu.in", RoleChoices.ACCOUNTS, False),
+            ("accounts_admin", "Accounts", "Administrator", "accounts.admin@aef.edu.in", RoleChoices.ACCOUNTS, True),
             # Manager
-            ("manager", "Finance", "Manager", "manager@aef.edu.in", RoleChoices.MANAGER),
-            # Admin
-            ("admin", "System", "Administrator", "admin@aef.edu.in", RoleChoices.ADMIN),
+            ("manager", "Finance", "Manager", "manager@aef.edu.in", RoleChoices.MANAGER, False),
+            # Superadmin
+            ("admin", "System", "Administrator", "admin@aef.edu.in", RoleChoices.ADMIN, True),
         ]
 
         users = {}
-        for username, fname, lname, email, role in users_config:
+        for item in users_config:
+            username, fname, lname, email, role, is_dept_admin = item
             u = User.objects.filter(username=username).first()
             if not u:
                 u = User.objects.create_user(
@@ -112,10 +116,14 @@ class Command(BaseCommand):
                     last_name=lname,
                     role=role,
                     primary_unit=primary_unit,
-                    is_staff=(role in [RoleChoices.ADMIN, RoleChoices.MANAGER]),
+                    is_department_admin=is_dept_admin,
+                    is_staff=(role in [RoleChoices.ADMIN, RoleChoices.MANAGER] or is_dept_admin),
                     is_superuser=(role == RoleChoices.ADMIN)
                 )
                 u.set_password("password123")
+                u.save()
+            else:
+                u.is_department_admin = is_dept_admin
                 u.save()
             users[username] = u
             UnitAccess.objects.get_or_create(user=u, unit=primary_unit, defaults={"can_create": True, "can_approve": True})

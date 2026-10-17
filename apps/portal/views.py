@@ -17,17 +17,23 @@ from apps.workflow.services import (
     approve_invoice, return_invoice_for_correction
 )
 from apps.invoices.services import allocate_and_submit_invoice, submit_na_invoice
+from .decorators import (
+    get_home_url_for_user,
+    store_access_required,
+    purchase_access_required,
+    accounts_access_required,
+)
 
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('portal:dashboard')
+        return redirect(get_home_url_for_user(request.user))
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
             messages.success(request, f"Welcome back, {user.get_full_name() or user.username}!")
-            return redirect('portal:dashboard')
+            return redirect(get_home_url_for_user(user))
         else:
             messages.error(request, "Invalid username or password.")
     else:
@@ -41,6 +47,8 @@ def logout_view(request):
 
 @login_required
 def dashboard_view(request):
+    if not (request.user.is_superadmin or request.user.role == RoleChoices.MANAGER):
+        return redirect(get_home_url_for_user(request.user))
     units = Unit.objects.filter(is_active=True).order_by('name')
     query = request.GET.get('q', '').strip()
     selected_unit = request.GET.get('unit', '').strip()
@@ -86,7 +94,7 @@ def dashboard_view(request):
     }
     return render(request, 'portal/dashboard.html', context)
 
-@login_required
+@store_access_required
 def store_portal_view(request):
     units = Unit.objects.filter(is_active=True).order_by('name')
     suppliers = Supplier.objects.filter(is_active=True).order_by('name')
@@ -104,7 +112,7 @@ def store_portal_view(request):
     }
     return render(request, 'portal/store_portal.html', context)
 
-@login_required
+@store_access_required
 def store_submit_view(request):
     if request.method == 'POST':
         try:
@@ -142,7 +150,7 @@ def store_submit_view(request):
             messages.error(request, f"Submission error: {str(e)}")
     return redirect('portal:store_portal')
 
-@login_required
+@store_access_required
 def store_handover_view(request):
     if request.method == 'POST':
         try:
@@ -169,7 +177,7 @@ def store_handover_view(request):
             messages.error(request, f"Handover error: {str(e)}")
     return redirect('portal:store_portal')
 
-@login_required
+@purchase_access_required
 def purchase_portal_view(request):
     units = Unit.objects.filter(is_active=True).order_by('name')
     incoming_batches = HandoverBatch.objects.filter(
@@ -184,7 +192,7 @@ def purchase_portal_view(request):
     }
     return render(request, 'portal/purchase_portal.html', context)
 
-@login_required
+@purchase_access_required
 def purchase_search_po_view(request):
     """
     HTMX partial view: Searches for unbilled GRNs matching a PO number.
@@ -199,7 +207,7 @@ def purchase_search_po_view(request):
 
     return render(request, 'portal/partials/po_search_results.html', {'receipts': receipts})
 
-@login_required
+@purchase_access_required
 def purchase_bill_submit_view(request):
     if request.method == 'POST':
         mode = request.POST.get('mode', 'search')
@@ -266,7 +274,7 @@ def purchase_bill_submit_view(request):
 
     return redirect('portal:purchase_portal')
 
-@login_required
+@purchase_access_required
 def purchase_ack_custody_view(request):
     if request.method == 'POST':
         batch_id = request.POST.get('batch_id')
@@ -285,7 +293,7 @@ def purchase_ack_custody_view(request):
             messages.error(request, f"Custody acknowledgment error: {str(e)}")
     return redirect('portal:purchase_portal')
 
-@login_required
+@accounts_access_required
 def accounts_portal_view(request):
     incoming_batches = HandoverBatch.objects.filter(
         handover_type=HandoverTypeChoices.PURCHASE_TO_ACCOUNTS,
@@ -308,7 +316,7 @@ def accounts_portal_view(request):
     }
     return render(request, 'portal/accounts_portal.html', context)
 
-@login_required
+@accounts_access_required
 def accounts_ack_custody_view(request):
     if request.method == 'POST':
         batch_id = request.POST.get('batch_id')
@@ -324,7 +332,7 @@ def accounts_ack_custody_view(request):
             messages.error(request, f"Custody error: {str(e)}")
     return redirect('portal:accounts_portal')
 
-@login_required
+@accounts_access_required
 def accounts_approve_view(request):
     if request.method == 'POST':
         invoice_id = request.POST.get('invoice_id')
@@ -336,7 +344,7 @@ def accounts_approve_view(request):
             messages.error(request, f"Approval error: {str(e)}")
     return redirect('portal:accounts_portal')
 
-@login_required
+@accounts_access_required
 def accounts_return_view(request):
     if request.method == 'POST':
         invoice_id = request.POST.get('invoice_id')
