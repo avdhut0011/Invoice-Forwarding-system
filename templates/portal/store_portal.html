@@ -1,23 +1,26 @@
 {% extends "base.html" %}
 
-{% block title %}Store Department — FMS Material Portal{% endblock %}
+{% block title %}Store Department — Ashoka FMS Enterprise{% endblock %}
 
 {% block content %}
 <div class="space-y-6">
     <!-- Top Action Bar -->
-    <div class="bg-md-surface-container-lowest p-6 rounded-3xl border border-md-outline-variant/60 shadow-m3-1 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs">
         <div>
-            <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-md-primary text-2xl">inventory_2</span>
-                <h1 class="text-2xl font-bold tracking-tight text-md-on-surface">Store Department Workspace</h1>
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-brand-600 border border-indigo-100">
+                    <span class="material-symbols-outlined text-lg">inventory_2</span>
+                </div>
+                <h1 class="font-display font-bold text-2xl tracking-tight text-slate-900">Store Department Workspace</h1>
             </div>
-            <p class="text-xs text-md-on-surface-variant mt-1">
-                Record material receipts, upload GRN/vendor scans, and dispatch custody packets to Purchase representatives.
+            <p class="text-xs text-slate-500 mt-1 font-normal">
+                Record physical material receipts, attach vendor delivery docs, and dispatch custody packets to Purchase representatives.
             </p>
         </div>
-        <div>
-            <a href="#handoverSection" class="flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-4 py-2.5 rounded-full shadow-m3-1 transition">
-                <span class="material-symbols-outlined text-[18px]">local_shipping</span>
+        <div class="flex items-center gap-2">
+            <a href="#handoverSection" 
+               class="inline-flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white font-semibold text-xs px-4 py-2.5 rounded-xl shadow-xs transition-all duration-150">
+                <span class="material-symbols-outlined text-[17px]">local_shipping</span>
                 <span>Handover Packets ({{ pending_handovers|length }})</span>
             </a>
         </div>
@@ -25,22 +28,24 @@
 
     <!-- Main Grid: Form (2 Cols) + Handover Dispatcher (1 Col) -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
         <!-- New Material Receipt Form -->
-        <div class="lg:col-span-2 bg-md-surface-container-lowest p-6 rounded-3xl border border-md-outline-variant/60 shadow-m3-1">
-            <h2 class="text-base font-bold text-md-on-surface mb-4 pb-2 border-b border-md-outline-variant/40 flex items-center gap-2">
-                <span class="material-symbols-outlined text-md-primary">edit_document</span>
-                <span>Record New Material Receipt (ST Series)</span>
-            </h2>
+        <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs">
+            <div class="flex items-center gap-2 pb-3 mb-5 border-b border-slate-100">
+                <span class="material-symbols-outlined text-brand-600 text-xl">edit_document</span>
+                <h2 class="font-display font-bold text-slate-900 text-sm">Record New Material Receipt (ST Series)</h2>
+            </div>
 
             <form method="post" action="{% url 'portal:store_submit' %}" enctype="multipart/form-data" class="space-y-4">
                 {% csrf_token %}
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">
-                            Educational Unit <span class="text-red-500">*</span>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                            Educational Unit <span class="text-rose-500">*</span>
                         </label>
-                        <select name="unit_id" required class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition">
+                        <select name="unit_id" required 
+                                class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
                             <option value="">- Select Unit -</option>
                             {% for u in units %}
                                 <option value="{{ u.id }}">{{ u.name }}</option>
@@ -49,20 +54,21 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">
-                            Material Received Date <span class="text-red-500">*</span>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                            Material Received Date <span class="text-rose-500">*</span>
                         </label>
-                        <input type="date" name="material_date" required class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition">
+                        <input type="date" name="material_date" required 
+                               class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">
-                            Supplier Name <span class="text-red-500">*</span>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                            Supplier Name <span class="text-rose-500">*</span>
                         </label>
                         <input type="text" name="supplier" required list="suppliersList" placeholder="e.g. Ashoka Stationers" 
-                               class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition">
+                               class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
                         <datalist id="suppliersList">
                             {% for s in suppliers %}
                                 <option value="{{ s.name }}">{{ s.name }}</option>
@@ -71,10 +77,11 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">
-                            Document Type <span class="text-red-500">*</span>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                            Document Type <span class="text-rose-500">*</span>
                         </label>
-                        <select name="doc_type" required class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition">
+                        <select name="doc_type" required 
+                                class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
                             <option value="PO">PO (Purchase Order)</option>
                             <option value="WO">WO (Work Order)</option>
                             <option value="INVOICE">Invoice Number</option>
@@ -85,81 +92,87 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">
-                            PO / WO / Inv No. <span class="text-red-500">*</span>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                            PO / WO / Inv No. <span class="text-rose-500">*</span>
                         </label>
                         <input type="text" name="po_wo_number" required placeholder="PO/2026/00142" 
-                               class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition font-mono">
+                               class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-mono placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">
-                            G.R.N. Number <span class="text-red-500">*</span>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                            G.R.N. Number <span class="text-rose-500">*</span>
                         </label>
                         <input type="text" name="grn_number" required placeholder="GRN-2026-081" 
-                               class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition font-mono">
+                               class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-mono placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">
-                            G.R.N. Date <span class="text-red-500">*</span>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                            G.R.N. Date <span class="text-rose-500">*</span>
                         </label>
-                        <input type="date" name="grn_date" required class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition">
+                        <input type="date" name="grn_date" required 
+                               class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">DC Number</label>
-                        <input type="text" name="dc_number" placeholder="Optional DC Number" class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">DC Number (Challan)</label>
+                        <input type="text" name="dc_number" placeholder="Optional DC No." 
+                               class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">Payment Category</label>
-                        <select name="payment_category" class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Payment Category</label>
+                        <select name="payment_category" 
+                                class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
                             <option value="Credit">Credit</option>
                             <option value="Cash">Cash</option>
                             <option value="IOU">IOU</option>
                             <option value="Online">Online</option>
                         </select>
                     </div>
-                    <div class="flex items-center pt-6">
-                        <label class="inline-flex items-center gap-2 cursor-pointer text-xs font-bold text-md-on-surface">
-                            <input type="checkbox" name="is_invoice_received" value="1" class="w-4 h-4 text-md-primary rounded-md">
+                    <div class="flex items-center pt-5">
+                        <label class="inline-flex items-center gap-2 cursor-pointer text-xs font-medium text-slate-700 select-none">
+                            <input type="checkbox" name="is_invoice_received" value="1" class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
                             <span>Supplier Invoice Attached?</span>
                         </label>
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">
-                        Material Description <span class="text-red-500">*</span>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                        Material Description <span class="text-rose-500">*</span>
                     </label>
                     <textarea name="description" required rows="2" placeholder="Summary of items received, quantity, and packaging condition..." 
-                              class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition"></textarea>
+                              class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all"></textarea>
                 </div>
 
-                <!-- Material File Dropzones -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-md-surface-container-low p-4 rounded-2xl border border-md-outline-variant/60">
+                <!-- Modern File Upload Dropzones -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50/60 p-4 rounded-xl border border-slate-200/80">
                     <div>
-                        <label class="block text-[11px] font-bold text-md-on-surface-variant uppercase tracking-wider mb-1 flex items-center gap-1">
-                            <span class="material-symbols-outlined text-[16px] text-md-primary">receipt</span>
+                        <label class="block text-[11px] font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-slate-500 text-[16px]">receipt</span>
                             <span>Upload Invoice Scan</span>
                         </label>
-                        <input type="file" name="invoice_scan" class="w-full text-xs text-md-secondary file:mr-2 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-md-primary-container file:text-md-on-primary-container hover:file:bg-blue-200">
+                        <input type="file" name="invoice_scan" 
+                               class="w-full text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-white file:text-slate-700 file:border file:border-slate-200 file:shadow-xs hover:file:bg-slate-50 cursor-pointer">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold text-md-on-surface-variant uppercase tracking-wider mb-1 flex items-center gap-1">
-                            <span class="material-symbols-outlined text-[16px] text-md-primary">file_copy</span>
+                        <label class="block text-[11px] font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-slate-500 text-[16px]">file_copy</span>
                             <span>Upload GRN Scan</span>
                         </label>
-                        <input type="file" name="grn_scan" class="w-full text-xs text-md-secondary file:mr-2 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-md-secondary-container file:text-md-on-secondary-container hover:file:bg-blue-200">
+                        <input type="file" name="grn_scan" 
+                               class="w-full text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-white file:text-slate-700 file:border file:border-slate-200 file:shadow-xs hover:file:bg-slate-50 cursor-pointer">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">
-                            Purchase Person to Hand Over To <span class="text-red-500">*</span>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                            Purchase Person to Hand Over To <span class="text-rose-500">*</span>
                         </label>
-                        <select name="assigned_purchase_person_id" required class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition">
+                        <select name="assigned_purchase_person_id" required 
+                                class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
                             <option value="">- Select Purchase Representative -</option>
                             {% for p in purchase_staff %}
                                 <option value="{{ p.id }}">{{ p.get_full_name|default:p.username }}</option>
@@ -168,38 +181,40 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">Store Remark</label>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Store Remark</label>
                         <input type="text" name="store_remark" placeholder="Special handling notes..." 
-                               class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition">
+                               class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
                     </div>
                 </div>
 
-                <button type="submit" class="w-full bg-md-primary hover:bg-[#004f80] text-white font-bold py-3.5 px-6 rounded-full shadow-m3-1 hover:shadow-m3-3 transition text-xs flex items-center justify-center gap-2">
-                    <span class="material-symbols-outlined text-[18px]">send</span>
+                <button type="submit" 
+                        class="w-full bg-brand-600 hover:bg-brand-500 active:bg-brand-700 text-white font-semibold py-3 px-6 rounded-xl shadow-xs hover:shadow transition-all duration-150 text-xs inline-flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-[17px]">send</span>
                     <span>Submit Material Receipt (Generate ST ID)</span>
                 </button>
             </form>
         </div>
 
         <!-- Dispatch Custody Handover Batch (Right Column) -->
-        <div id="handoverSection" class="bg-md-surface-container-lowest p-6 rounded-3xl border border-md-outline-variant/60 shadow-m3-1 flex flex-col justify-between">
+        <div id="handoverSection" class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between">
             <div>
-                <h2 class="text-base font-bold text-md-on-surface mb-1 flex items-center gap-2">
-                    <span class="material-symbols-outlined text-amber-600">local_shipping</span>
-                    <span>Dispatch Handover Batch</span>
-                </h2>
-                <p class="text-[11px] text-md-on-surface-variant mb-4">
-                    Group pending receipts into an authoritative physical custody packet (HB Series).
+                <div class="flex items-center gap-2 pb-3 mb-4 border-b border-slate-100">
+                    <span class="material-symbols-outlined text-amber-600 text-xl">local_shipping</span>
+                    <h2 class="font-display font-bold text-slate-900 text-sm">Dispatch Handover Batch</h2>
+                </div>
+                <p class="text-xs text-slate-500 mb-4 leading-relaxed">
+                    Group physical store receipts into an authoritative hardcopy custody packet (HB Series) dispatched to Purchase.
                 </p>
 
                 <form method="post" action="{% url 'portal:store_handover' %}" class="space-y-4">
                     {% csrf_token %}
 
                     <div>
-                        <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">
-                            Intended Recipient (Purchase) <span class="text-red-500">*</span>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                            Intended Recipient (Purchase) <span class="text-rose-500">*</span>
                         </label>
-                        <select name="recipient_id" required class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20 outline-none transition">
+                        <select name="recipient_id" required 
+                                class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-amber-600 focus:ring-4 focus:ring-amber-500/10 transition-all">
                             <option value="">- Select Recipient -</option>
                             {% for p in purchase_staff %}
                                 <option value="{{ p.id }}">{{ p.get_full_name|default:p.username }}</option>
@@ -208,35 +223,37 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">
-                            Pending Receipts to Include
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5 flex justify-between items-center">
+                            <span>Pending Receipts to Include</span>
+                            <span class="text-[11px] font-mono text-slate-400">({{ pending_handovers|length }} ready)</span>
                         </label>
-                        <div class="max-h-60 overflow-y-auto border border-md-outline-variant/60 rounded-2xl divide-y divide-md-outline-variant/30 p-2 text-xs bg-md-surface-container-low">
+                        <div class="max-h-56 overflow-y-auto border border-slate-200 rounded-xl divide-y divide-slate-100 p-2 text-xs bg-slate-50/40">
                             {% for r in pending_handovers %}
-                            <label class="flex items-start gap-2.5 p-2 hover:bg-white rounded-xl cursor-pointer transition">
-                                <input type="checkbox" name="receipt_ids" value="{{ r.id }}" class="mt-0.5 text-amber-600 rounded">
+                            <label class="flex items-start gap-2.5 p-2 hover:bg-white rounded-lg cursor-pointer transition-colors duration-150">
+                                <input type="checkbox" name="receipt_ids" value="{{ r.id }}" class="mt-0.5 text-amber-600 rounded border-slate-300 focus:ring-amber-500">
                                 <div class="flex-1">
                                     <div class="flex justify-between items-center">
-                                        <span class="font-mono font-bold text-md-on-surface">{{ r.st_number }}</span>
-                                        <span class="text-[10px] text-md-secondary font-mono">{{ r.grn_number }}</span>
+                                        <span class="font-mono font-semibold text-slate-900">{{ r.st_number }}</span>
+                                        <span class="text-[10px] text-slate-400 font-mono">{{ r.grn_number }}</span>
                                     </div>
-                                    <div class="text-[11px] text-md-secondary truncate max-w-xs">{{ r.supplier_name_raw }}</div>
+                                    <div class="text-[11px] text-slate-500 truncate max-w-[200px]">{{ r.supplier_name_raw }}</div>
                                 </div>
                             </label>
                             {% empty %}
-                            <div class="py-6 text-center text-md-outline text-[11px]">No receipts awaiting handover.</div>
+                            <div class="py-8 text-center text-slate-400 text-xs">No receipts currently awaiting handover.</div>
                             {% endfor %}
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">Packet Checklist Summary</label>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Packet Checklist Summary</label>
                         <input type="text" name="checklist" placeholder="e.g. 3 signed GRNs, 2 vendor invoices" 
-                               class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20 outline-none transition">
+                               class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-amber-600 focus:ring-4 focus:ring-amber-500/10 transition-all">
                     </div>
 
-                    <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-full shadow-m3-1 hover:shadow-m3-2 transition text-xs flex items-center justify-center gap-1.5">
-                        <span class="material-symbols-outlined text-[18px]">verified</span>
+                    <button type="submit" 
+                            class="w-full bg-amber-600 hover:bg-amber-500 active:bg-amber-700 text-white font-semibold py-2.5 px-4 rounded-xl shadow-xs hover:shadow transition-all duration-150 text-xs inline-flex items-center justify-center gap-1.5">
+                        <span class="material-symbols-outlined text-[17px]">verified</span>
                         <span>Dispatch Handover Packet</span>
                     </button>
                 </form>
@@ -245,17 +262,17 @@
     </div>
 
     <!-- Recent Receipts Table Surface -->
-    <div class="bg-md-surface-container-lowest rounded-3xl border border-md-outline-variant/60 shadow-m3-1 overflow-hidden">
-        <div class="p-5 border-b border-md-outline-variant/40 flex justify-between items-center bg-md-surface-container-low">
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div class="p-4 sm:p-5 border-b border-slate-200/80 flex justify-between items-center bg-slate-50/40">
             <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-md-primary">history</span>
-                <h2 class="font-bold text-md-on-surface text-sm">Store Material Receipts History</h2>
+                <span class="material-symbols-outlined text-brand-600 text-xl">history</span>
+                <h2 class="font-display font-bold text-slate-900 text-sm">Store Material Receipts History</h2>
             </div>
-            <span class="text-[11px] text-md-secondary font-medium">Recent 25 items</span>
+            <span class="text-[11px] text-slate-500 font-medium font-mono">Recent 25 items</span>
         </div>
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs text-md-on-surface">
-                <thead class="bg-md-surface-container text-md-on-surface-variant uppercase text-[10px] font-bold tracking-wider border-b border-md-outline-variant/40">
+            <table class="w-full text-left text-xs text-slate-700">
+                <thead class="bg-slate-50/75 text-slate-500 uppercase text-[10px] font-semibold tracking-wider border-b border-slate-200/80">
                     <tr>
                         <th class="py-3 px-4">ST ID</th>
                         <th class="py-3 px-4">GRN &amp; Date</th>
@@ -265,30 +282,47 @@
                         <th class="py-3 px-4 text-center">Linked Bill</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-md-outline-variant/30">
+                <tbody class="divide-y divide-slate-100">
                     {% for r in recent_receipts %}
-                    <tr class="hover:bg-md-surface-container-low/70 transition">
-                        <td class="py-3 px-4 font-mono font-bold text-md-primary">{{ r.st_number }}</td>
-                        <td class="py-3 px-4">
-                            <span class="font-mono font-bold">{{ r.grn_number }}</span>
-                            <span class="text-md-secondary text-[10px]">({{ r.grn_date|date:"d/m/Y" }})</span>
-                        </td>
-                        <td class="py-3 px-4 font-semibold text-md-on-surface">{{ r.supplier_name_raw }}</td>
-                        <td class="py-3 px-4 text-md-secondary">{{ r.assigned_purchase_person_raw|default:"Unassigned" }}</td>
-                        <td class="py-3 px-4 text-center">
-                            <span class="inline-block text-[11px] font-semibold px-2.5 py-0.5 rounded-full
-                                {% if r.status == 'BILL_LINKED' %}bg-md-success-container text-md-success border border-emerald-300
-                                {% elif r.status == 'CUSTODY_ACKNOWLEDGED' %}bg-sky-100 text-sky-900 border border-sky-300
-                                {% elif r.status == 'HANDED_OVER' %}bg-amber-100 text-amber-900 border border-amber-300
-                                {% else %}bg-md-surface-container-high text-md-secondary border border-md-outline-variant{% endif %}">
-                                {{ r.get_status_display }}
+                    <tr class="hover:bg-slate-50/60 transition-colors duration-150">
+                        <td class="py-3.5 px-4 font-mono font-semibold text-brand-700">
+                            <span class="inline-block bg-brand-50 border border-brand-200/50 px-2 py-0.5 rounded-md">
+                                {{ r.st_number }}
                             </span>
                         </td>
-                        <td class="py-3 px-4 font-mono font-bold text-center text-blue-700">{{ r.bill_unique_id|default:"-" }}</td>
+                        <td class="py-3.5 px-4">
+                            <span class="font-mono font-semibold text-slate-900">{{ r.grn_number }}</span>
+                            <span class="text-slate-400 text-[10px] block font-mono">{{ r.grn_date|date:"d/m/Y" }}</span>
+                        </td>
+                        <td class="py-3.5 px-4 font-semibold text-slate-900">{{ r.supplier_name_raw }}</td>
+                        <td class="py-3.5 px-4 text-slate-500">{{ r.assigned_purchase_person_raw|default:"Unassigned" }}</td>
+                        <td class="py-3.5 px-4 text-center">
+                            <span class="inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-0.5 rounded-full border
+                                {% if r.status == 'BILL_LINKED' %}bg-emerald-50 text-emerald-700 border-emerald-200
+                                {% elif r.status == 'CUSTODY_ACKNOWLEDGED' %}bg-sky-50 text-sky-700 border-sky-200
+                                {% elif r.status == 'HANDED_OVER' %}bg-amber-50 text-amber-700 border-amber-200
+                                {% else %}bg-slate-100 text-slate-700 border-slate-200{% endif %}">
+                                <span class="w-1.5 h-1.5 rounded-full 
+                                    {% if r.status == 'BILL_LINKED' %}bg-emerald-500
+                                    {% elif r.status == 'CUSTODY_ACKNOWLEDGED' %}bg-sky-500
+                                    {% elif r.status == 'HANDED_OVER' %}bg-amber-500
+                                    {% else %}bg-slate-400{% endif %}"></span>
+                                <span>{{ r.get_status_display }}</span>
+                            </span>
+                        </td>
+                        <td class="py-3.5 px-4 font-mono font-semibold text-center whitespace-nowrap">
+                            {% if r.bill_unique_id %}
+                                <span class="text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-200/50">
+                                    {{ r.bill_unique_id }}
+                                </span>
+                            {% else %}
+                                <span class="text-slate-300">-</span>
+                            {% endif %}
+                        </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="py-8 text-center text-md-secondary">No receipts recorded yet.</td>
+                        <td colspan="6" class="py-12 text-center text-slate-400">No store material receipts recorded yet.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

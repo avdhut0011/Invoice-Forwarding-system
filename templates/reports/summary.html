@@ -1,49 +1,51 @@
 {% extends "base.html" %}
 
-{% block title %}Reports & Analytics — FMS Material Portal{% endblock %}
+{% block title %}Reports & Analytics — Ashoka FMS Enterprise{% endblock %}
 
 {% block content %}
 <div class="space-y-6">
     <!-- Header with Export Actions -->
-    <div class="bg-md-surface-container-lowest p-6 rounded-3xl border border-md-outline-variant/60 shadow-m3-1 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs">
         <div>
             <div class="flex items-center gap-2.5">
-                <span class="material-symbols-outlined text-md-primary text-3xl">analytics</span>
-                <h1 class="text-2xl font-bold tracking-tight text-md-on-surface">FMS Reports &amp; Linkage Analytics</h1>
+                <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-brand-600 border border-indigo-100">
+                    <span class="material-symbols-outlined text-lg">insights</span>
+                </div>
+                <h1 class="font-display font-bold text-2xl tracking-tight text-slate-900">FMS Reports &amp; Linkage Analytics</h1>
             </div>
-            <p class="text-xs text-md-on-surface-variant mt-1">
+            <p class="text-xs text-slate-500 mt-1 font-normal">
                 Store representative performance, multi-receipt invoice linkage, and 3-tab historical audit exports.
             </p>
         </div>
         <div>
             <a href="{% url 'reports:export_excel' %}?start_date={{ start_date }}&end_date={{ end_date }}" 
-               class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-6 py-3 rounded-full shadow-m3-1 hover:shadow-m3-2 transition inline-flex items-center gap-2">
-                <span class="material-symbols-outlined text-[18px]">table_view</span>
+               class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold text-xs px-5 py-2.5 rounded-xl shadow-xs transition-all duration-150">
+                <span class="material-symbols-outlined text-[17px]">table_view</span>
                 <span>Download Excel (.xlsx)</span>
             </a>
         </div>
     </div>
 
     <!-- Date Filters Card -->
-    <div class="bg-md-surface-container-lowest p-5 rounded-3xl border border-md-outline-variant/60 shadow-m3-1">
-        <form method="get" class="flex flex-wrap items-end gap-4">
+    <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+        <form method="get" class="flex flex-wrap items-end gap-3.5">
             <div>
-                <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">Start Date</label>
+                <label class="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Start Date</label>
                 <input type="date" name="start_date" value="{{ start_date }}" 
-                       class="bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition">
+                       class="bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
             </div>
             <div>
-                <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">End Date</label>
+                <label class="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">End Date</label>
                 <input type="date" name="end_date" value="{{ end_date }}" 
-                       class="bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition">
+                       class="bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
             </div>
             <button type="submit" 
-                    class="bg-md-primary hover:bg-md-primary/90 text-md-on-primary font-bold text-xs px-5 py-2.5 rounded-full shadow-m3-1 transition inline-flex items-center gap-1.5">
+                    class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2 rounded-xl shadow-xs transition-all">
                 <span class="material-symbols-outlined text-[16px]">filter_list</span>
                 <span>Filter Reports</span>
             </button>
             {% if start_date or end_date %}
-            <a href="{% url 'reports:summary' %}" class="text-xs font-semibold text-md-on-surface-variant hover:text-md-on-surface self-center px-2 py-1">
+            <a href="{% url 'reports:summary' %}" class="text-xs font-semibold text-slate-500 hover:text-slate-800 self-center px-2 py-1">
                 Reset
             </a>
             {% endif %}
@@ -51,55 +53,52 @@
     </div>
 
     <!-- Tab 1: Store Person-wise Summary -->
-    <div class="bg-md-surface-container-lowest rounded-3xl border border-md-outline-variant/60 shadow-m3-1 overflow-hidden">
-        <div class="p-5 border-b border-md-outline-variant/40 flex justify-between items-center bg-md-surface-container/30">
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div class="p-4 sm:p-5 border-b border-slate-200/80 flex justify-between items-center bg-slate-50/40">
             <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-md-primary">group</span>
-                <h2 class="font-bold text-md-on-surface text-base">Store Representative Performance (Tab 1)</h2>
+                <span class="material-symbols-outlined text-brand-600 text-xl">group</span>
+                <h2 class="font-display font-bold text-slate-900 text-sm">Store Representative Performance (Tab 1)</h2>
             </div>
-            <span class="text-xs font-semibold px-3 py-1 bg-md-secondary-container text-md-on-secondary-container rounded-full">
+            <span class="text-[11px] font-semibold px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg border border-slate-200/60 font-mono">
                 {{ store_summary|length }} Staff Active
             </span>
         </div>
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs text-md-on-surface-variant">
-                <thead class="bg-md-surface-container/60 text-md-on-surface font-bold uppercase text-[11px] tracking-wider border-b border-md-outline-variant/40">
+            <table class="w-full text-left text-xs text-slate-700">
+                <thead class="bg-slate-50/75 text-slate-500 uppercase text-[10px] font-semibold tracking-wider border-b border-slate-200/80">
                     <tr>
-                        <th class="py-3.5 px-6">Store Representative</th>
-                        <th class="py-3.5 px-6 text-center">Total Receipts</th>
-                        <th class="py-3.5 px-6 text-center text-emerald-700">Bill Linked</th>
-                        <th class="py-3.5 px-6 text-center text-sky-700">Custody Confirmed</th>
-                        <th class="py-3.5 px-6 text-center text-amber-700">Pending Handover</th>
+                        <th class="py-3 px-6">Store Representative</th>
+                        <th class="py-3 px-6 text-center">Total Receipts</th>
+                        <th class="py-3 px-6 text-center text-emerald-700">Bill Linked</th>
+                        <th class="py-3 px-6 text-center text-sky-700">Custody Confirmed</th>
+                        <th class="py-3 px-6 text-center text-amber-700">Pending Handover</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-md-outline-variant/20">
+                <tbody class="divide-y divide-slate-100">
                     {% for item in store_summary %}
-                    <tr class="hover:bg-md-surface-container/20 transition">
-                        <td class="py-4 px-6 font-semibold text-md-on-surface flex items-center gap-2">
-                            <span class="material-symbols-outlined text-md-outline text-base">person</span>
+                    <tr class="hover:bg-slate-50/60 transition-colors duration-150">
+                        <td class="py-3.5 px-6 font-semibold text-slate-900 flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-[11px] font-bold">
+                                {{ item.store_person_raw|default:"U"|slice:":1"|upper }}
+                            </span>
                             <span>{{ item.store_person_raw|default:"Unassigned" }}</span>
                         </td>
-                        <td class="py-4 px-6 text-center font-bold text-md-on-surface">
+                        <td class="py-3.5 px-6 text-center font-bold text-slate-900 tabular-nums">
                             {{ item.total_receipts }}
                         </td>
-                        <td class="py-4 px-6 text-center font-bold text-emerald-700">
+                        <td class="py-3.5 px-6 text-center font-bold text-emerald-600 tabular-nums">
                             {{ item.bill_linked }}
                         </td>
-                        <td class="py-4 px-6 text-center font-bold text-sky-700">
+                        <td class="py-3.5 px-6 text-center font-bold text-sky-600 tabular-nums">
                             {{ item.custody_ack }}
                         </td>
-                        <td class="py-4 px-6 text-center font-bold text-amber-700">
+                        <td class="py-3.5 px-6 text-center font-bold text-amber-600 tabular-nums">
                             {{ item.pending_handover }}
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="5" class="py-12 text-center text-md-on-surface-variant">
-                            <div class="flex flex-col items-center justify-center gap-2">
-                                <span class="material-symbols-outlined text-4xl text-md-outline">inventory_2</span>
-                                <span>No store receipt records found.</span>
-                            </div>
-                        </td>
+                        <td colspan="5" class="py-12 text-center text-slate-400">No store receipt records found.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -108,80 +107,77 @@
     </div>
 
     <!-- Tab 2: Bill Linkage Summary -->
-    <div class="bg-md-surface-container-lowest rounded-3xl border border-md-outline-variant/60 shadow-m3-1 overflow-hidden">
-        <div class="p-5 border-b border-md-outline-variant/40 flex justify-between items-center bg-md-surface-container/30">
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div class="p-4 sm:p-5 border-b border-slate-200/80 flex justify-between items-center bg-slate-50/40">
             <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-md-secondary">receipt_long</span>
-                <h2 class="font-bold text-md-on-surface text-base">Bill Linkage &amp; Allocation Summary (Tab 2)</h2>
+                <span class="material-symbols-outlined text-brand-600 text-xl">receipt_long</span>
+                <h2 class="font-display font-bold text-slate-900 text-sm">Bill Linkage &amp; Allocation Summary (Tab 2)</h2>
             </div>
-            <span class="text-xs font-semibold px-3 py-1 bg-md-secondary-container text-md-on-secondary-container rounded-full">
+            <span class="text-[11px] font-semibold px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg border border-slate-200/60 font-mono">
                 {{ bills|length }} Invoices Recorded
             </span>
         </div>
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs text-md-on-surface-variant">
-                <thead class="bg-md-surface-container/60 text-md-on-surface font-bold uppercase text-[11px] tracking-wider border-b border-md-outline-variant/40">
+            <table class="w-full text-left text-xs text-slate-700">
+                <thead class="bg-slate-50/75 text-slate-500 uppercase text-[10px] font-semibold tracking-wider border-b border-slate-200/80">
                     <tr>
-                        <th class="py-3.5 px-6">Bill UID</th>
-                        <th class="py-3.5 px-6">Supplier &amp; Bill No.</th>
-                        <th class="py-3.5 px-6">Unit</th>
-                        <th class="py-3.5 px-6 text-right">Amount (₹)</th>
-                        <th class="py-3.5 px-6">Linked GRNs</th>
-                        <th class="py-3.5 px-6">Due Date</th>
-                        <th class="py-3.5 px-6 text-center">Status</th>
+                        <th class="py-3 px-6">Bill UID</th>
+                        <th class="py-3 px-6">Supplier &amp; Bill No.</th>
+                        <th class="py-3 px-6">Unit</th>
+                        <th class="py-3 px-6 text-right">Amount (₹)</th>
+                        <th class="py-3 px-6">Linked GRNs</th>
+                        <th class="py-3 px-6">Due Date</th>
+                        <th class="py-3 px-6 text-center">Status</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-md-outline-variant/20">
+                <tbody class="divide-y divide-slate-100">
                     {% for bill in bills %}
-                    <tr class="hover:bg-md-surface-container/20 transition">
-                        <td class="py-4 px-6 font-mono font-bold text-md-primary">
-                            {{ bill.bill_unique_id }}
+                    <tr class="hover:bg-slate-50/60 transition-colors duration-150">
+                        <td class="py-3.5 px-6 font-mono font-semibold text-brand-700">
+                            <span class="inline-block bg-brand-50 border border-brand-200/50 px-2 py-0.5 rounded-md">
+                                {{ bill.bill_unique_id }}
+                            </span>
                         </td>
-                        <td class="py-4 px-6">
-                            <div class="font-semibold text-md-on-surface">{{ bill.supplier_name_raw }}</div>
-                            <div class="text-[11px] text-md-on-surface-variant font-mono">Inv: {{ bill.invoice_number }} ({{ bill.invoice_date|date:"d/m/Y" }})</div>
+                        <td class="py-3.5 px-6">
+                            <div class="font-semibold text-slate-900">{{ bill.supplier_name_raw }}</div>
+                            <div class="text-[11px] text-slate-400 font-mono">Inv: {{ bill.invoice_number }} ({{ bill.invoice_date|date:"d/m/Y" }})</div>
                         </td>
-                        <td class="py-4 px-6 text-md-on-surface-variant">
+                        <td class="py-3.5 px-6 text-slate-600">
                             {{ bill.unit.name }}
                         </td>
-                        <td class="py-4 px-6 text-right font-mono font-bold text-md-on-surface">
+                        <td class="py-3.5 px-6 text-right font-mono font-bold text-slate-900 tabular-nums">
                             ₹{{ bill.gross_amount|floatformat:2 }}
                         </td>
-                        <td class="py-4 px-6">
+                        <td class="py-3.5 px-6">
                             {% for alloc in bill.allocations.all %}
-                                <span class="inline-block bg-md-surface-container text-md-on-surface-variant text-[11px] px-2.5 py-0.5 rounded-full font-mono mr-1 mb-1 border border-md-outline-variant/40">
+                                <span class="inline-block bg-slate-100 text-slate-700 text-[11px] px-2 py-0.5 rounded-md font-mono mr-1 mb-1 border border-slate-200/60">
                                     {{ alloc.goods_receipt.grn_number }} (₹{{ alloc.allocated_amount|floatformat:0 }})
                                 </span>
                             {% empty %}
-                                <span class="text-xs text-md-on-surface-variant/80 italic">{{ bill.na_unique_id|default:"Direct / Non-PO" }}</span>
+                                <span class="text-xs text-slate-400 italic">{{ bill.na_unique_id|default:"Direct / Non-PO" }}</span>
                             {% endfor %}
                         </td>
-                        <td class="py-4 px-6 text-md-on-surface-variant font-mono">
+                        <td class="py-3.5 px-6 text-slate-500 font-mono">
                             {{ bill.due_date|date:"d/m/Y"|default:"-" }}
                         </td>
-                        <td class="py-4 px-6 text-center">
-                            <span class="inline-flex items-center gap-1 text-[11px] font-semibold px-3 py-1 rounded-full
-                                {% if bill.status == 'APPROVED' %}bg-emerald-100 text-emerald-800 border border-emerald-200
-                                {% elif bill.status == 'RETURNED_FOR_CORRECTION' %}bg-rose-100 text-rose-800 border border-rose-200
-                                {% elif bill.status == 'SUBMITTED_TO_ACCOUNTS' %}bg-amber-100 text-amber-800 border border-amber-200
-                                {% else %}bg-sky-100 text-sky-800 border border-sky-200{% endif %}">
+                        <td class="py-3.5 px-6 text-center">
+                            <span class="inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-0.5 rounded-full border
+                                {% if bill.status == 'APPROVED' %}bg-emerald-50 text-emerald-700 border-emerald-200
+                                {% elif bill.status == 'RETURNED_FOR_CORRECTION' %}bg-rose-50 text-rose-700 border-rose-200
+                                {% elif bill.status == 'SUBMITTED_TO_ACCOUNTS' %}bg-amber-50 text-amber-700 border-amber-200
+                                {% else %}bg-sky-50 text-sky-700 border-sky-200{% endif %}">
                                 <span class="w-1.5 h-1.5 rounded-full 
-                                    {% if bill.status == 'APPROVED' %}bg-emerald-600
-                                    {% elif bill.status == 'RETURNED_FOR_CORRECTION' %}bg-rose-600
-                                    {% elif bill.status == 'SUBMITTED_TO_ACCOUNTS' %}bg-amber-600
-                                    {% else %}bg-sky-600{% endif %}"></span>
+                                    {% if bill.status == 'APPROVED' %}bg-emerald-500
+                                    {% elif bill.status == 'RETURNED_FOR_CORRECTION' %}bg-rose-500
+                                    {% elif bill.status == 'SUBMITTED_TO_ACCOUNTS' %}bg-amber-500
+                                    {% else %}bg-sky-500{% endif %}"></span>
                                 <span>{{ bill.get_status_display }}</span>
                             </span>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="7" class="py-12 text-center text-md-on-surface-variant">
-                            <div class="flex flex-col items-center justify-center gap-2">
-                                <span class="material-symbols-outlined text-4xl text-md-outline">receipt</span>
-                                <span>No bill records found.</span>
-                            </div>
-                        </td>
+                        <td colspan="7" class="py-12 text-center text-slate-400">No bill records found.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

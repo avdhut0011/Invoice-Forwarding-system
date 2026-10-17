@@ -1,82 +1,86 @@
 {% extends "base.html" %}
 
-{% block title %}Accounts Department — FMS Material Portal{% endblock %}
+{% block title %}Accounts Department — Ashoka FMS Enterprise{% endblock %}
 
 {% block content %}
 <div class="space-y-6">
     <!-- Top Action Bar -->
-    <div class="bg-md-surface-container-lowest p-6 rounded-3xl border border-md-outline-variant/60 shadow-m3-1 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs">
         <div>
             <div class="flex items-center gap-2.5">
-                <span class="material-symbols-outlined text-md-primary text-3xl">account_balance</span>
-                <h1 class="text-2xl font-bold tracking-tight text-md-on-surface">Accounts Department Portal</h1>
+                <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-brand-600 border border-indigo-100">
+                    <span class="material-symbols-outlined text-lg">account_balance</span>
+                </div>
+                <h1 class="font-display font-bold text-2xl tracking-tight text-slate-900">Accounts Department Workspace</h1>
             </div>
-            <p class="text-xs text-md-on-surface-variant mt-1">
+            <p class="text-xs text-slate-500 mt-1 font-normal">
                 Acknowledge hardcopy custody from Purchase, perform line-level invoice verification, and approve or return for correction.
             </p>
         </div>
         <div class="flex items-center gap-2">
-            <span class="bg-indigo-100 text-indigo-900 border border-indigo-200 text-xs font-bold px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5 shadow-2xs">
-                <span class="material-symbols-outlined text-[16px]">hourglass_empty</span>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 text-indigo-800 border border-indigo-200/60 shadow-2xs">
+                <span class="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-pulse"></span>
                 <span>{{ pending_invoices|length }} Invoices Pending Action</span>
             </span>
         </div>
     </div>
 
-    <!-- M3 Segmented Pill Navigation Tabs -->
-    <div class="bg-md-surface-container p-1.5 rounded-full inline-flex flex-wrap gap-1 border border-md-outline-variant/40" id="portalTabs">
+    <!-- Designer Segmented Pill Navigation Tabs -->
+    <div class="bg-slate-100/80 p-1 rounded-xl inline-flex flex-wrap gap-1 border border-slate-200/60 shadow-xs" id="portalTabs">
         <button type="button" onclick="switchTab('verificationTab')" id="btn-verificationTab" 
-                class="tab-btn active inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs font-bold transition shadow-m3-1 bg-md-surface-container-lowest text-md-primary">
-            <span class="material-symbols-outlined text-[18px]">verified</span>
-            <span>1. Invoice Verification &amp; Approval Queue ({{ pending_invoices|length }})</span>
+                class="tab-btn inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-150 bg-white text-slate-900 shadow-xs border border-slate-200/60">
+            <span class="material-symbols-outlined text-[17px] text-brand-600">verified</span>
+            <span>1. Verification &amp; Approval Queue ({{ pending_invoices|length }})</span>
         </button>
         <button type="button" onclick="switchTab('custodyTab')" id="btn-custodyTab" 
-                class="tab-btn inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs font-medium transition text-md-on-surface-variant hover:text-md-on-surface hover:bg-md-surface-container-high/60">
-            <span class="material-symbols-outlined text-[18px]">inventory</span>
+                class="tab-btn inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-150 text-slate-600 hover:text-slate-900 hover:bg-slate-200/60">
+            <span class="material-symbols-outlined text-[17px]">inventory</span>
             <span>2. Hardcopy Custody Inbox ({{ incoming_batches|length }})</span>
         </button>
     </div>
 
     <!-- TAB 1: Verification & Approval Queue -->
     <div id="verificationTab" class="space-y-4">
-        <div class="bg-md-surface-container-lowest rounded-3xl border border-md-outline-variant/60 shadow-m3-1 overflow-hidden">
-            <div class="p-5 border-b border-md-outline-variant/40 flex justify-between items-center bg-md-surface-container/30">
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+            <div class="p-4 sm:p-5 border-b border-slate-200/80 flex justify-between items-center bg-slate-50/40">
                 <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined text-md-primary">rule</span>
-                    <h2 class="font-bold text-md-on-surface text-base">Invoices Awaiting Review / Approval</h2>
+                    <span class="material-symbols-outlined text-brand-600 text-xl">rule</span>
+                    <h2 class="font-display font-bold text-slate-900 text-sm">Invoices Awaiting Review / Approval</h2>
                 </div>
-                <span class="text-xs font-semibold px-3 py-1 bg-md-secondary-container text-md-on-secondary-container rounded-full">
+                <span class="text-[11px] font-semibold px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg border border-slate-200/60 font-mono">
                     {{ pending_invoices|length }} Pending Invoices
                 </span>
             </div>
-            <div class="divide-y divide-md-outline-variant/30">
+            <div class="divide-y divide-slate-100">
                 {% for inv in pending_invoices %}
-                <div class="p-6 space-y-4 hover:bg-md-surface-container/20 transition">
+                <div class="p-6 space-y-4 hover:bg-slate-50/40 transition-colors duration-150">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <div class="space-y-1">
+                        <div class="space-y-1.5">
                             <div class="flex items-center gap-2 flex-wrap">
-                                <span class="font-mono font-bold text-md-primary text-base">{{ inv.bill_unique_id }}</span>
-                                <span class="text-xs font-mono bg-md-surface-container text-md-on-surface-variant px-2.5 py-0.5 rounded-full border border-md-outline-variant/40">
+                                <span class="font-mono font-bold text-brand-700 text-sm bg-brand-50 border border-brand-200/50 px-2 py-0.5 rounded-md">
+                                    {{ inv.bill_unique_id }}
+                                </span>
+                                <span class="text-xs font-mono bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-md border border-slate-200/60">
                                     Inv: {{ inv.invoice_number }}
                                 </span>
-                                <span class="text-xs font-semibold px-3 py-0.5 rounded-full inline-flex items-center gap-1
-                                    {% if inv.status == 'APPROVED' %}bg-emerald-100 text-emerald-800 border border-emerald-200
-                                    {% elif inv.status == 'RETURNED_FOR_CORRECTION' %}bg-rose-100 text-rose-800 border border-rose-200
-                                    {% elif inv.status == 'SUBMITTED_TO_ACCOUNTS' %}bg-amber-100 text-amber-800 border border-amber-200
-                                    {% else %}bg-sky-100 text-sky-800 border border-sky-200{% endif %}">
+                                <span class="inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-0.5 rounded-full border
+                                    {% if inv.status == 'APPROVED' %}bg-emerald-50 text-emerald-700 border-emerald-200
+                                    {% elif inv.status == 'RETURNED_FOR_CORRECTION' %}bg-rose-50 text-rose-700 border-rose-200
+                                    {% elif inv.status == 'SUBMITTED_TO_ACCOUNTS' %}bg-amber-50 text-amber-700 border-amber-200
+                                    {% else %}bg-sky-50 text-sky-700 border-sky-200{% endif %}">
                                     <span class="w-1.5 h-1.5 rounded-full 
-                                        {% if inv.status == 'APPROVED' %}bg-emerald-600
-                                        {% elif inv.status == 'RETURNED_FOR_CORRECTION' %}bg-rose-600
-                                        {% elif inv.status == 'SUBMITTED_TO_ACCOUNTS' %}bg-amber-600
-                                        {% else %}bg-sky-600{% endif %}"></span>
+                                        {% if inv.status == 'APPROVED' %}bg-emerald-500
+                                        {% elif inv.status == 'RETURNED_FOR_CORRECTION' %}bg-rose-500
+                                        {% elif inv.status == 'SUBMITTED_TO_ACCOUNTS' %}bg-amber-500
+                                        {% else %}bg-sky-500{% endif %}"></span>
                                     <span>{{ inv.get_status_display }}</span>
                                 </span>
                             </div>
-                            <div class="font-bold text-md-on-surface text-xl">
-                                ₹{{ inv.gross_amount|floatformat:2 }} <span class="text-sm font-normal text-md-on-surface-variant">— {{ inv.supplier_name_raw }}</span>
+                            <div class="font-display font-bold text-slate-900 text-xl">
+                                ₹{{ inv.gross_amount|floatformat:2 }} <span class="text-sm font-normal text-slate-500">— {{ inv.supplier_name_raw }}</span>
                             </div>
-                            <div class="text-xs text-md-on-surface-variant flex items-center gap-3 flex-wrap">
-                                <span>Unit: <strong class="text-md-on-surface">{{ inv.unit.name }}</strong></span>
+                            <div class="text-xs text-slate-500 flex items-center gap-3 flex-wrap">
+                                <span>Unit: <strong class="text-slate-800">{{ inv.unit.name }}</strong></span>
                                 <span>•</span>
                                 <span>Bill Date: {{ inv.invoice_date|date:"d/m/Y" }}</span>
                                 <span>•</span>
@@ -88,16 +92,16 @@
                         <div class="flex items-center gap-2 flex-wrap">
                             {% if inv.bill_scan %}
                                 <a href="{{ inv.bill_scan.url }}" target="_blank" 
-                                   class="border border-md-outline-variant hover:bg-md-surface-container text-md-on-surface font-semibold text-xs px-4 py-2 rounded-full transition inline-flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-[16px]">visibility</span>
+                                   class="inline-flex items-center gap-1 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300/80 font-semibold text-xs px-3.5 py-2 rounded-xl transition shadow-xs">
+                                    <span class="material-symbols-outlined text-[15px] text-slate-500">visibility</span>
                                     <span>View Scan</span>
                                 </a>
                             {% endif %}
                             
                             <!-- Return Modal Trigger -->
                             <button type="button" onclick="openReturnModal('{{ inv.id }}', '{{ inv.bill_unique_id }}')" 
-                                    class="bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 font-bold text-xs px-4 py-2 rounded-full transition inline-flex items-center gap-1">
-                                <span class="material-symbols-outlined text-[16px]">undo</span>
+                                    class="inline-flex items-center gap-1 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-semibold text-xs px-3.5 py-2 rounded-xl transition shadow-2xs">
+                                <span class="material-symbols-outlined text-[15px]">undo</span>
                                 <span>Return for Correction</span>
                             </button>
 
@@ -106,7 +110,7 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="invoice_id" value="{{ inv.id }}">
                                 <button type="submit" 
-                                        class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-5 py-2 rounded-full shadow-m3-1 transition inline-flex items-center gap-1.5">
+                                        class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold text-xs px-4 py-2 rounded-xl shadow-xs transition">
                                     <span class="material-symbols-outlined text-[16px]">check_circle</span>
                                     <span>Approve Invoice</span>
                                 </button>
@@ -115,23 +119,23 @@
                     </div>
 
                     <!-- Linked GRNs & Allocations details -->
-                    <div class="bg-md-surface-container/40 p-4 rounded-2xl border border-md-outline-variant/40 text-xs">
-                        <div class="font-bold text-md-on-surface-variant uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                            <span class="material-symbols-outlined text-sm">link</span>
+                    <div class="bg-slate-50/70 p-4 rounded-xl border border-slate-200/70 text-xs">
+                        <div class="font-semibold text-slate-600 uppercase tracking-wider mb-2.5 flex items-center gap-1.5 text-[11px]">
+                            <span class="material-symbols-outlined text-sm text-slate-400">link</span>
                             <span>Linked GRN Allocations (Authoritative Breakdown):</span>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                             {% for alloc in inv.allocations.all %}
-                            <div class="bg-md-surface-container-lowest p-3 rounded-2xl border border-md-outline-variant/50 shadow-2xs">
-                                <div class="font-mono font-bold text-md-primary text-xs">{{ alloc.goods_receipt.st_number }} — GRN: {{ alloc.goods_receipt.grn_number }}</div>
-                                <div class="text-md-on-surface-variant mt-1 text-[11px] truncate">{{ alloc.goods_receipt.description }}</div>
+                            <div class="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-2xs">
+                                <div class="font-mono font-semibold text-brand-700 text-xs">{{ alloc.goods_receipt.st_number }} — GRN: {{ alloc.goods_receipt.grn_number }}</div>
+                                <div class="text-slate-500 mt-1 text-[11px] truncate">{{ alloc.goods_receipt.description }}</div>
                                 <div class="mt-2 font-mono font-bold text-emerald-700 text-right text-xs">
                                     Allocated: ₹{{ alloc.allocated_amount|floatformat:2 }}
                                 </div>
                             </div>
                             {% empty %}
-                            <div class="text-md-on-surface-variant italic py-1 flex items-center gap-1.5">
-                                <span class="material-symbols-outlined text-base">info</span>
+                            <div class="text-slate-400 italic py-1 flex items-center gap-1.5 text-xs">
+                                <span class="material-symbols-outlined text-sm">info</span>
                                 <span>Non-PO Direct Invoice (No GRN linked). Reference: {{ inv.na_unique_id|default:"Direct" }}</span>
                             </div>
                             {% endfor %}
@@ -139,9 +143,11 @@
                     </div>
                 </div>
                 {% empty %}
-                <div class="p-12 text-center text-md-on-surface-variant text-xs flex flex-col items-center justify-center gap-2">
-                    <span class="material-symbols-outlined text-4xl text-md-outline">task_alt</span>
-                    <span>No pending invoices waiting in the verification queue.</span>
+                <div class="p-12 text-center text-slate-400 text-xs">
+                    <div class="flex flex-col items-center justify-center gap-1.5">
+                        <span class="material-symbols-outlined text-3xl text-slate-300">task_alt</span>
+                        <span>No pending invoices waiting in the verification queue.</span>
+                    </div>
                 </div>
                 {% endfor %}
             </div>
@@ -150,37 +156,37 @@
 
     <!-- TAB 2: Custody Inbox -->
     <div id="custodyTab" class="hidden space-y-4">
-        <div class="bg-md-surface-container-lowest rounded-3xl border border-md-outline-variant/60 shadow-m3-1 overflow-hidden">
-            <div class="p-5 border-b border-md-outline-variant/40 flex justify-between items-center bg-md-surface-container/30">
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+            <div class="p-4 sm:p-5 border-b border-slate-200/80 flex justify-between items-center bg-slate-50/40">
                 <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined text-md-primary">move_to_inbox</span>
-                    <h2 class="font-bold text-md-on-surface text-base">Purchase-to-Accounts Custody Handover Packets</h2>
+                    <span class="material-symbols-outlined text-brand-600 text-xl">move_to_inbox</span>
+                    <h2 class="font-display font-bold text-slate-900 text-sm">Purchase-to-Accounts Custody Handover Packets</h2>
                 </div>
-                <span class="text-xs font-semibold px-3 py-1 bg-amber-100 text-amber-800 rounded-full border border-amber-200">
+                <span class="text-[11px] font-semibold px-2.5 py-1 bg-amber-50 text-amber-800 rounded-lg border border-amber-200/60 font-mono">
                     {{ incoming_batches|length }} Packets Pending Custody
                 </span>
             </div>
-            <div class="divide-y divide-md-outline-variant/30">
+            <div class="divide-y divide-slate-100">
                 {% for b in incoming_batches %}
-                <div class="p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:bg-md-surface-container/20 transition">
+                <div class="p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:bg-slate-50/60 transition-colors duration-150">
                     <div class="space-y-1.5">
-                        <div class="flex items-center gap-3">
-                            <span class="font-mono font-bold text-md-primary text-base">{{ b.batch_number }}</span>
-                            <span class="text-xs bg-amber-100 text-amber-800 font-bold px-2.5 py-0.5 rounded-full border border-amber-200 inline-flex items-center gap-1">
-                                <span class="material-symbols-outlined text-[14px]">hourglass_top</span>
+                        <div class="flex items-center gap-2.5">
+                            <span class="font-mono font-bold text-brand-700 text-sm">{{ b.batch_number }}</span>
+                            <span class="inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
                                 <span>Awaiting Custody Acknowledgment</span>
                             </span>
                         </div>
-                        <div class="text-xs font-semibold text-md-on-surface">
-                            From Purchase: <span class="text-md-on-surface-variant font-normal">{{ b.sender_name_raw }} ({{ b.sender.email }})</span>
+                        <div class="text-xs font-semibold text-slate-900">
+                            From Purchase: <span class="text-slate-600 font-normal">{{ b.sender_name_raw }} ({{ b.sender.email }})</span>
                         </div>
-                        <div class="text-xs text-md-on-surface-variant flex items-center gap-3">
+                        <div class="text-xs text-slate-500 flex items-center gap-3">
                             <span>Unit: <strong>{{ b.unit.name }}</strong></span>
                             <span>•</span>
                             <span>Dispatched: {{ b.dispatched_at|date:"d/m/Y H:i" }}</span>
                         </div>
-                        <div class="text-xs text-md-on-surface-variant bg-md-surface-container/50 p-3 rounded-2xl border border-md-outline-variant/40 mt-2">
-                            <strong class="text-md-on-surface">Summary:</strong> {{ b.checklist_summary|default:"Supplier bills and GRN attachments" }}
+                        <div class="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-200/60 mt-2">
+                            <strong class="text-slate-800">Summary:</strong> {{ b.checklist_summary|default:"Supplier bills and GRN attachments" }}
                         </div>
                     </div>
 
@@ -188,16 +194,18 @@
                         {% csrf_token %}
                         <input type="hidden" name="batch_id" value="{{ b.id }}">
                         <button type="submit" name="all_present" value="1" 
-                                class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-5 py-2.5 rounded-full shadow-m3-1 transition inline-flex items-center gap-1.5">
+                                class="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-semibold text-xs px-4 py-2.5 rounded-xl shadow-xs transition-all">
                             <span class="material-symbols-outlined text-[16px]">verified</span>
                             <span>Confirm Physical Custody</span>
                         </button>
                     </form>
                 </div>
                 {% empty %}
-                <div class="p-12 text-center text-md-on-surface-variant text-xs flex flex-col items-center justify-center gap-2">
-                    <span class="material-symbols-outlined text-4xl text-md-outline">inbox</span>
-                    <span>No pending handover packets from Purchase.</span>
+                <div class="p-12 text-center text-slate-400 text-xs">
+                    <div class="flex flex-col items-center justify-center gap-1.5">
+                        <span class="material-symbols-outlined text-3xl text-slate-300">inbox</span>
+                        <span>No pending handover packets from Purchase.</span>
+                    </div>
                 </div>
                 {% endfor %}
             </div>
@@ -205,45 +213,47 @@
     </div>
 </div>
 
-<!-- Return for Correction Modal (Material Design 3 Dialog) -->
-<div id="returnModal" class="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
-    <div class="bg-md-surface-container-lowest rounded-3xl max-w-lg w-full p-6 shadow-m3-3 border border-md-outline-variant/60 animate-in fade-in zoom-in-95 duration-150">
-        <div class="flex items-center gap-2.5 mb-2">
-            <span class="material-symbols-outlined text-rose-600 text-2xl">assignment_return</span>
-            <h3 class="text-lg font-bold text-md-on-surface">Return Invoice for Correction</h3>
+<!-- Return for Correction Modal (Designer Dialog) -->
+<div id="returnModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-elevated border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+        <div class="flex items-center gap-2 pb-3 mb-4 border-b border-slate-100">
+            <div class="w-8 h-8 rounded-lg bg-rose-50 flex items-center justify-center text-rose-600 border border-rose-100">
+                <span class="material-symbols-outlined text-lg">assignment_return</span>
+            </div>
+            <div>
+                <h3 class="font-display font-bold text-slate-900 text-sm">Return Invoice for Correction</h3>
+                <p class="text-[11px] text-slate-400">Reassigns task back to purchase submitter &amp; opens Exception Case.</p>
+            </div>
         </div>
-        <p class="text-xs text-md-on-surface-variant mb-5">
-            This creates an Exception Case, reassigns the workflow task back to the purchase submitter, and logs the full audit trail.
-        </p>
 
         <form method="post" action="{% url 'portal:accounts_return' %}" class="space-y-4">
             {% csrf_token %}
             <input type="hidden" name="invoice_id" id="modalInvoiceId">
 
             <div>
-                <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">
+                <label class="block text-xs font-semibold text-slate-700 mb-1.5">
                     Invoice Reference
                 </label>
                 <input type="text" id="modalBillRef" readonly 
-                       class="w-full bg-md-surface-container border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs font-mono font-bold text-md-primary">
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-mono font-semibold text-brand-700">
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">
-                    Correction Reason &amp; Missing Evidence <span class="text-red-500">*</span>
+                <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                    Correction Reason &amp; Missing Evidence <span class="text-rose-500">*</span>
                 </label>
                 <textarea name="reason" required rows="4" 
                           placeholder="Detail the discrepancy (e.g. rate mismatch vs PO, missing signed delivery challan, incorrect tax calculation)..." 
-                          class="w-full bg-md-surface border border-md-outline-variant rounded-2xl p-3 text-xs text-md-on-surface focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 outline-none transition"></textarea>
+                          class="w-full bg-slate-50/50 border border-slate-200 rounded-xl p-3 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-rose-600 focus:ring-4 focus:ring-rose-500/10 transition-all"></textarea>
             </div>
 
             <div class="flex justify-end gap-2 pt-2">
                 <button type="button" onclick="closeReturnModal()" 
-                        class="px-5 py-2.5 rounded-full text-xs font-semibold text-md-on-surface-variant hover:bg-md-surface-container transition">
+                        class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors">
                     Cancel
                 </button>
                 <button type="submit" 
-                        class="bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs px-6 py-2.5 rounded-full shadow-m3-1 transition inline-flex items-center gap-1.5">
+                        class="bg-rose-600 hover:bg-rose-500 active:bg-rose-700 text-white font-semibold text-xs px-5 py-2 rounded-xl shadow-xs transition-all inline-flex items-center gap-1.5">
                     <span class="material-symbols-outlined text-[16px]">undo</span>
                     <span>Return to Purchase</span>
                 </button>
@@ -257,13 +267,17 @@
         ['verificationTab', 'custodyTab'].forEach(t => {
             document.getElementById(t).classList.add('hidden');
             const btn = document.getElementById('btn-' + t);
-            btn.classList.remove('bg-md-surface-container-lowest', 'text-md-primary', 'shadow-m3-1', 'font-bold');
-            btn.classList.add('text-md-on-surface-variant', 'font-medium');
+            btn.classList.remove('bg-white', 'text-slate-900', 'shadow-xs', 'border', 'border-slate-200/60');
+            btn.classList.add('text-slate-600');
+            const icon = btn.querySelector('.material-symbols-outlined');
+            if (icon) icon.classList.remove('text-brand-600');
         });
         document.getElementById(tabId).classList.remove('hidden');
         const activeBtn = document.getElementById('btn-' + tabId);
-        activeBtn.classList.remove('text-md-on-surface-variant', 'font-medium');
-        activeBtn.classList.add('bg-md-surface-container-lowest', 'text-md-primary', 'shadow-m3-1', 'font-bold');
+        activeBtn.classList.remove('text-slate-600');
+        activeBtn.classList.add('bg-white', 'text-slate-900', 'shadow-xs', 'border', 'border-slate-200/60');
+        const activeIcon = activeBtn.querySelector('.material-symbols-outlined');
+        if (activeIcon) activeIcon.classList.add('text-brand-600');
     }
 
     function openReturnModal(invId, billRef) {

@@ -1,76 +1,78 @@
 {% extends "base.html" %}
 
-{% block title %}Purchase Department — FMS Material Portal{% endblock %}
+{% block title %}Purchase Department — Ashoka FMS Enterprise{% endblock %}
 
 {% block content %}
 <div class="space-y-6">
     <!-- Top Action Bar -->
-    <div class="bg-md-surface-container-lowest p-6 rounded-3xl border border-md-outline-variant/60 shadow-m3-1 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs">
         <div>
             <div class="flex items-center gap-2.5">
-                <span class="material-symbols-outlined text-md-primary text-3xl">shopping_cart</span>
-                <h1 class="text-2xl font-bold tracking-tight text-md-on-surface">Purchase Department Portal</h1>
+                <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-brand-600 border border-indigo-100">
+                    <span class="material-symbols-outlined text-lg">shopping_cart</span>
+                </div>
+                <h1 class="font-display font-bold text-2xl tracking-tight text-slate-900">Purchase Department Workspace</h1>
             </div>
-            <p class="text-xs text-md-on-surface-variant mt-1">
+            <p class="text-xs text-slate-500 mt-1 font-normal">
                 Acknowledge hardcopy custody from Stores, match POs and allocate supplier bills across GRNs.
             </p>
         </div>
         <div class="flex items-center gap-2">
-            <span class="bg-amber-100 text-amber-900 border border-amber-200 text-xs font-bold px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5 shadow-2xs">
-                <span class="material-symbols-outlined text-[16px]">pending</span>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200/60 shadow-2xs">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
                 <span>{{ pending_custody_count }} Custody Packets Waiting</span>
             </span>
         </div>
     </div>
 
-    <!-- M3 Segmented Pill Navigation Tabs -->
-    <div class="bg-md-surface-container p-1.5 rounded-full inline-flex flex-wrap gap-1 border border-md-outline-variant/40" id="portalTabs">
+    <!-- Designer Segmented Pill Navigation Tabs -->
+    <div class="bg-slate-100/80 p-1 rounded-xl inline-flex flex-wrap gap-1 border border-slate-200/60 shadow-xs" id="portalTabs">
         <button type="button" onclick="switchTab('linkTab')" id="btn-linkTab" 
-                class="tab-btn active inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs font-bold transition shadow-m3-1 bg-md-surface-container-lowest text-md-primary">
-            <span class="material-symbols-outlined text-[18px]">manage_search</span>
+                class="tab-btn inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-150 bg-white text-slate-900 shadow-xs border border-slate-200/60">
+            <span class="material-symbols-outlined text-[17px] text-brand-600">manage_search</span>
             <span>1. Search PO &amp; Link Bill</span>
         </button>
         <button type="button" onclick="switchTab('custodyTab')" id="btn-custodyTab" 
-                class="tab-btn inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs font-medium transition text-md-on-surface-variant hover:text-md-on-surface hover:bg-md-surface-container-high/60">
-            <span class="material-symbols-outlined text-[18px]">inventory</span>
+                class="tab-btn inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-150 text-slate-600 hover:text-slate-900 hover:bg-slate-200/60">
+            <span class="material-symbols-outlined text-[17px]">inventory</span>
             <span>2. Store Custody Inbox ({{ incoming_batches|length }})</span>
         </button>
         <button type="button" onclick="switchTab('naTab')" id="btn-naTab" 
-                class="tab-btn inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs font-medium transition text-md-on-surface-variant hover:text-md-on-surface hover:bg-md-surface-container-high/60">
-            <span class="material-symbols-outlined text-[18px]">receipt_long</span>
+                class="tab-btn inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-150 text-slate-600 hover:text-slate-900 hover:bg-slate-200/60">
+            <span class="material-symbols-outlined text-[17px]">receipt_long</span>
             <span>3. Direct / N/A Bill (No PO)</span>
         </button>
     </div>
 
     <!-- TAB 1: Search PO & Link Bill -->
     <div id="linkTab" class="space-y-6">
-        <div class="bg-md-surface-container-lowest p-6 rounded-3xl border border-md-outline-variant/60 shadow-m3-1">
-            <div class="border-b border-md-outline-variant/40 pb-4 mb-5">
-                <h2 class="text-base font-bold text-md-on-surface flex items-center gap-2">
-                    <span class="material-symbols-outlined text-md-primary">search</span>
+        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs">
+            <div class="pb-4 mb-5 border-b border-slate-100">
+                <h2 class="font-display font-bold text-slate-900 text-sm flex items-center gap-2">
+                    <span class="material-symbols-outlined text-brand-600 text-lg">search</span>
                     <span>Step 1: Search Order / PO / DC Number</span>
                 </h2>
-                <p class="text-xs text-md-on-surface-variant mt-1">
+                <p class="text-xs text-slate-500 mt-1">
                     Enter the exact or partial PO / WO number to load unbilled GRN receipts ready for invoice allocation.
                 </p>
             </div>
 
-            <div class="flex flex-col sm:flex-row gap-3">
+            <div class="flex flex-col sm:flex-row gap-2.5">
                 <div class="relative flex-1">
-                    <span class="material-symbols-outlined absolute left-3.5 top-3 text-md-on-surface-variant/70 text-lg">tag</span>
+                    <span class="material-symbols-outlined absolute left-3.5 top-2.5 text-slate-400 text-lg">tag</span>
                     <input type="text" id="poSearchInput" placeholder="e.g. PO/2026/00142" 
                            hx-get="{% url 'portal:purchase_search_po' %}" 
                            hx-target="#poResults" 
-                           hx-trigger="keyup changed delay:400ms, search" 
+                           hx-trigger="keyup changed delay:350ms, search" 
                            name="po_number"
-                           class="w-full pl-10 pr-4 py-2.5 bg-md-surface border border-md-outline-variant rounded-2xl text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none font-mono transition">
+                           class="w-full pl-10 pr-4 py-2 bg-slate-50/50 border border-slate-200 rounded-xl text-xs text-slate-900 font-mono placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
                 </div>
                 <button type="button" 
                         hx-get="{% url 'portal:purchase_search_po' %}" 
                         hx-include="#poSearchInput" 
                         hx-target="#poResults" 
-                        class="bg-md-primary hover:bg-md-primary/90 text-md-on-primary font-bold text-xs px-6 py-2.5 rounded-full transition shadow-m3-1 inline-flex items-center justify-center gap-1.5">
-                    <span class="material-symbols-outlined text-[18px]">search</span>
+                        class="bg-slate-900 hover:bg-slate-800 active:bg-black text-white font-semibold text-xs px-5 py-2 rounded-xl transition-all shadow-xs inline-flex items-center justify-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px]">search</span>
                     <span>Search PO</span>
                 </button>
             </div>
@@ -81,79 +83,83 @@
                 <input type="hidden" name="mode" value="search">
                 
                 <div id="poResults">
-                    <div class="p-6 bg-md-surface-container/40 border border-dashed border-md-outline-variant rounded-2xl text-center text-md-on-surface-variant text-xs flex flex-col items-center justify-center gap-1.5">
-                        <span class="material-symbols-outlined text-md-outline text-3xl">find_in_page</span>
-                        <span>Enter a PO or WO number above to search matching GRNs.</span>
+                    <div class="p-8 bg-slate-50/50 border border-dashed border-slate-200 rounded-xl text-center text-slate-400 text-xs flex flex-col items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-slate-300 text-3xl">find_in_page</span>
+                        <span>Enter a PO or WO number above to search matching unbilled GRNs.</span>
                     </div>
                 </div>
 
-                <div class="mt-8 pt-6 border-t border-md-outline-variant/40 space-y-4">
+                <div class="mt-8 pt-6 border-t border-slate-100 space-y-4">
                     <div class="mb-4">
-                        <h2 class="text-base font-bold text-md-on-surface flex items-center gap-2">
-                            <span class="material-symbols-outlined text-md-secondary">receipt</span>
+                        <h2 class="font-display font-bold text-slate-900 text-sm flex items-center gap-2">
+                            <span class="material-symbols-outlined text-brand-600 text-lg">receipt</span>
                             <span>Step 2: Enter Supplier Bill / Invoice Details</span>
                         </h2>
-                        <p class="text-xs text-md-on-surface-variant mt-0.5">
+                        <p class="text-xs text-slate-500 mt-0.5">
                             Provide the tax invoice attributes matching the physical or digital vendor bill.
                         </p>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">
-                                Supplier Bill Number <span class="text-red-500">*</span>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                                Supplier Bill Number <span class="text-rose-500">*</span>
                             </label>
                             <input type="text" name="bill_number" required placeholder="e.g. INV-2026-991" 
-                                   class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition font-mono">
+                                   class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-mono focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">
-                                Bill Date <span class="text-red-500">*</span>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                                Bill Date <span class="text-rose-500">*</span>
                             </label>
                             <input type="date" name="bill_date" required 
-                                   class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition">
+                                   class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">
-                                Total Bill Amount (₹) <span class="text-red-500">*</span>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                                Total Bill Amount (₹) <span class="text-rose-500">*</span>
                             </label>
                             <input type="number" step="0.01" name="bill_amount" required placeholder="100000.00" 
-                                   class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition font-mono font-bold">
+                                   class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-mono font-semibold focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">Due Date of Payment</label>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Due Date of Payment</label>
                             <input type="date" name="due_date" 
-                                   class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition">
+                                   class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">Supplier Code</label>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Supplier Code</label>
                             <input type="text" name="supplier_code" placeholder="e.g. SUP-001" 
-                                   class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition font-mono">
+                                   class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-mono focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">GRN Received From Stores On</label>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1.5">GRN Received From Stores On</label>
                             <input type="date" name="grn_received_on" 
-                                   class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition">
+                                   class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
                         </div>
                     </div>
 
-                    <div class="bg-md-surface-container/50 p-4 rounded-2xl border border-md-outline-variant/60">
-                        <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">Upload Supplier Invoice Scan</label>
+                    <div class="bg-slate-50/60 p-4 rounded-xl border border-slate-200/80">
+                        <label class="block text-[11px] font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-slate-500 text-[16px]">cloud_upload</span>
+                            <span>Upload Supplier Invoice Scan</span>
+                        </label>
                         <input type="file" name="bill_scan" 
-                               class="w-full text-xs text-md-on-surface-variant file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-md-secondary-container file:text-md-on-secondary-container hover:file:opacity-90 transition cursor-pointer">
+                               class="w-full text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-white file:text-slate-700 file:border file:border-slate-200 file:shadow-xs hover:file:bg-slate-50 cursor-pointer">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">Purchase Remarks</label>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Purchase Remarks</label>
                         <input type="text" name="remark" placeholder="e.g. Rates verified against PO, full material received" 
-                               class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition">
+                               class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
                     </div>
 
-                    <button type="submit" class="w-full bg-md-primary hover:bg-md-primary/90 text-md-on-primary font-bold py-3.5 rounded-full transition shadow-m3-2 hover:shadow-m3-3 text-xs inline-flex items-center justify-center gap-2">
-                        <span class="material-symbols-outlined text-base">send</span>
+                    <button type="submit" 
+                            class="w-full bg-brand-600 hover:bg-brand-500 active:bg-brand-700 text-white font-semibold py-3 px-6 rounded-xl shadow-xs hover:shadow transition-all duration-150 text-xs inline-flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-[17px]">send</span>
                         <span>Submit Bill &amp; Forward to Accounts (Generate BILL ID)</span>
                     </button>
                 </div>
@@ -163,54 +169,56 @@
 
     <!-- TAB 2: Store Custody Inbox -->
     <div id="custodyTab" class="hidden space-y-4">
-        <div class="bg-md-surface-container-lowest rounded-3xl border border-md-outline-variant/60 shadow-m3-1 overflow-hidden">
-            <div class="p-5 border-b border-md-outline-variant/40 flex justify-between items-center bg-md-surface-container/30">
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+            <div class="p-4 sm:p-5 border-b border-slate-200/80 flex justify-between items-center bg-slate-50/40">
                 <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined text-md-primary">move_to_inbox</span>
-                    <h2 class="font-bold text-md-on-surface text-base">Store Hardcopy Custody Inbox</h2>
+                    <span class="material-symbols-outlined text-brand-600 text-xl">move_to_inbox</span>
+                    <h2 class="font-display font-bold text-slate-900 text-sm">Store Hardcopy Custody Inbox</h2>
                 </div>
-                <span class="text-xs font-semibold px-3 py-1 bg-amber-100 text-amber-800 rounded-full border border-amber-200">
+                <span class="text-[11px] font-semibold px-2.5 py-1 bg-amber-50 text-amber-800 rounded-lg border border-amber-200/60 font-mono">
                     {{ incoming_batches|length }} Packets Pending Custody
                 </span>
             </div>
-            <div class="divide-y divide-md-outline-variant/30">
+            <div class="divide-y divide-slate-100">
                 {% for b in incoming_batches %}
-                <div class="p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:bg-md-surface-container/20 transition">
+                <div class="p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:bg-slate-50/60 transition-colors duration-150">
                     <div class="space-y-1.5">
-                        <div class="flex items-center gap-3">
-                            <span class="font-mono font-bold text-md-primary text-base">{{ b.batch_number }}</span>
-                            <span class="text-xs bg-amber-100 text-amber-800 font-bold px-2.5 py-0.5 rounded-full border border-amber-200 inline-flex items-center gap-1">
-                                <span class="material-symbols-outlined text-[14px]">hourglass_top</span>
-                                <span>Awaiting Acknowledgment</span>
+                        <div class="flex items-center gap-2.5">
+                            <span class="font-mono font-bold text-brand-700 text-sm">{{ b.batch_number }}</span>
+                            <span class="inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                <span>Awaiting Custody Acknowledgment</span>
                             </span>
                         </div>
-                        <div class="text-xs font-semibold text-md-on-surface">
-                            Dispatched by: <span class="text-md-on-surface-variant font-normal">{{ b.sender_name_raw }} ({{ b.sender.email }})</span>
+                        <div class="text-xs font-semibold text-slate-900">
+                            Dispatched by: <span class="text-slate-600 font-normal">{{ b.sender_name_raw }} ({{ b.sender.email }})</span>
                         </div>
-                        <div class="text-xs text-md-on-surface-variant flex items-center gap-3">
+                        <div class="text-xs text-slate-500 flex items-center gap-3">
                             <span>Unit: <strong>{{ b.unit.name }}</strong></span>
                             <span>•</span>
                             <span>Dispatched: {{ b.dispatched_at|date:"d/m/Y H:i" }}</span>
                         </div>
-                        <div class="text-xs text-md-on-surface-variant bg-md-surface-container/50 p-3 rounded-2xl border border-md-outline-variant/40 mt-2">
-                            <strong class="text-md-on-surface">Checklist:</strong> {{ b.checklist_summary|default:"Material receipt documents and scans" }}
+                        <div class="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-200/60 mt-2">
+                            <strong class="text-slate-800">Checklist:</strong> {{ b.checklist_summary|default:"Material receipt documents and scans" }}
                         </div>
                     </div>
 
-                    <form method="post" action="{% url 'portal:purchase_ack_custody' %}" class="flex flex-col sm:flex-row gap-2 shrink-0">
+                    <form method="post" action="{% url 'portal:purchase_ack_custody' %}" class="shrink-0">
                         {% csrf_token %}
                         <input type="hidden" name="batch_id" value="{{ b.id }}">
                         <button type="submit" name="all_present" value="1" 
-                                class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-5 py-2.5 rounded-full shadow-m3-1 transition inline-flex items-center gap-1.5">
+                                class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold text-xs px-4 py-2.5 rounded-xl shadow-xs transition-all">
                             <span class="material-symbols-outlined text-[16px]">check_circle</span>
                             <span>Acknowledge Physical Custody</span>
                         </button>
                     </form>
                 </div>
                 {% empty %}
-                <div class="p-12 text-center text-md-on-surface-variant text-xs flex flex-col items-center justify-center gap-2">
-                    <span class="material-symbols-outlined text-4xl text-md-outline">inbox</span>
-                    <span>No pending custody handover packets from Stores.</span>
+                <div class="p-12 text-center text-slate-400 text-xs">
+                    <div class="flex flex-col items-center justify-center gap-1.5">
+                        <span class="material-symbols-outlined text-3xl text-slate-300">inbox</span>
+                        <span>No pending custody handover packets from Stores.</span>
+                    </div>
                 </div>
                 {% endfor %}
             </div>
@@ -219,13 +227,13 @@
 
     <!-- TAB 3: Direct / N/A Bill -->
     <div id="naTab" class="hidden space-y-4">
-        <div class="bg-md-surface-container-lowest p-6 rounded-3xl border border-md-outline-variant/60 shadow-m3-1">
-            <div class="border-b border-md-outline-variant/40 pb-4 mb-5">
-                <h2 class="text-base font-bold text-md-on-surface flex items-center gap-2">
-                    <span class="material-symbols-outlined text-md-secondary">receipt_long</span>
+        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs">
+            <div class="pb-4 mb-5 border-b border-slate-100">
+                <h2 class="font-display font-bold text-slate-900 text-sm flex items-center gap-2">
+                    <span class="material-symbols-outlined text-brand-600 text-lg">receipt_long</span>
                     <span>Direct / Non-PO Bill Submission</span>
                 </h2>
-                <p class="text-xs text-md-on-surface-variant mt-1">
+                <p class="text-xs text-slate-500 mt-1">
                     Use this path for utility payments, direct service expenses, or invoices without prior store receipts. Generates NA-XXXXX &amp; BILL-XXXXX.
                 </p>
             </div>
@@ -236,56 +244,61 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">
-                            Educational Unit <span class="text-red-500">*</span>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                            Educational Unit <span class="text-rose-500">*</span>
                         </label>
-                        <select name="unit_id" required class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition">
+                        <select name="unit_id" required 
+                                class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
                             {% for u in units %}
                                 <option value="{{ u.id }}">{{ u.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">
-                            Supplier / Service Provider Name <span class="text-red-500">*</span>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                            Supplier / Service Provider Name <span class="text-rose-500">*</span>
                         </label>
                         <input type="text" name="supplier_name" required placeholder="e.g. Maharashtra State Electricity" 
-                               class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition">
+                               class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">
-                            Bill Number <span class="text-red-500">*</span>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                            Bill Number <span class="text-rose-500">*</span>
                         </label>
                         <input type="text" name="bill_number" required placeholder="Bill / Ref No." 
-                               class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition font-mono">
+                               class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-mono focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">
-                            Bill Date <span class="text-red-500">*</span>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                            Bill Date <span class="text-rose-500">*</span>
                         </label>
                         <input type="date" name="bill_date" required 
-                               class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition">
+                               class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">
-                            Gross Amount (₹) <span class="text-red-500">*</span>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                            Gross Amount (₹) <span class="text-rose-500">*</span>
                         </label>
                         <input type="number" step="0.01" name="bill_amount" required placeholder="0.00" 
-                               class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition font-mono font-bold">
+                               class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-mono font-semibold focus:bg-white focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-500/10 transition-all">
                     </div>
                 </div>
 
-                <div class="bg-md-surface-container/50 p-4 rounded-2xl border border-md-outline-variant/60">
-                    <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1">Upload Invoice Image/Scan</label>
+                <div class="bg-slate-50/60 p-4 rounded-xl border border-slate-200/80">
+                    <label class="block text-[11px] font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-slate-500 text-[16px]">cloud_upload</span>
+                        <span>Upload Invoice Image/Scan</span>
+                    </label>
                     <input type="file" name="bill_scan" 
-                           class="w-full text-xs text-md-on-surface-variant file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-md-secondary-container file:text-md-on-secondary-container hover:file:opacity-90 transition cursor-pointer">
+                           class="w-full text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-white file:text-slate-700 file:border file:border-slate-200 file:shadow-xs hover:file:bg-slate-50 cursor-pointer">
                 </div>
 
-                <button type="submit" class="w-full bg-md-on-surface hover:bg-black text-md-surface font-bold py-3.5 rounded-full transition shadow-m3-1 text-xs inline-flex items-center justify-center gap-2">
-                    <span class="material-symbols-outlined text-base">check</span>
+                <button type="submit" 
+                        class="w-full bg-slate-900 hover:bg-slate-800 active:bg-black text-white font-semibold py-3 px-6 rounded-xl shadow-xs hover:shadow transition-all duration-150 text-xs inline-flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-[17px]">check</span>
                     <span>Submit Non-PO Bill to Accounts</span>
                 </button>
             </form>
@@ -298,13 +311,17 @@
         ['linkTab', 'custodyTab', 'naTab'].forEach(t => {
             document.getElementById(t).classList.add('hidden');
             const btn = document.getElementById('btn-' + t);
-            btn.classList.remove('bg-md-surface-container-lowest', 'text-md-primary', 'shadow-m3-1', 'font-bold');
-            btn.classList.add('text-md-on-surface-variant', 'font-medium');
+            btn.classList.remove('bg-white', 'text-slate-900', 'shadow-xs', 'border', 'border-slate-200/60');
+            btn.classList.add('text-slate-600');
+            const icon = btn.querySelector('.material-symbols-outlined');
+            if (icon) icon.classList.remove('text-brand-600');
         });
         document.getElementById(tabId).classList.remove('hidden');
         const activeBtn = document.getElementById('btn-' + tabId);
-        activeBtn.classList.remove('text-md-on-surface-variant', 'font-medium');
-        activeBtn.classList.add('bg-md-surface-container-lowest', 'text-md-primary', 'shadow-m3-1', 'font-bold');
+        activeBtn.classList.remove('text-slate-600');
+        activeBtn.classList.add('bg-white', 'text-slate-900', 'shadow-xs', 'border', 'border-slate-200/60');
+        const activeIcon = activeBtn.querySelector('.material-symbols-outlined');
+        if (activeIcon) activeIcon.classList.add('text-brand-600');
     }
 </script>
 {% endblock %}
