@@ -1,3 +1,4 @@
+import random
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from datetime import timedelta, date
@@ -7,6 +8,14 @@ from apps.procurement.models import PaymentTerms, Supplier, PurchaseOrder, Order
 from apps.receipts.models import GoodsReceipt, ReceiptLine, DocTypeChoices, PaymentCategoryChoices, ReceiptStatusChoices
 from apps.invoices.models import Invoice, InvoiceAllocation, InvoiceTypeChoices, InvoiceStatusChoices
 from apps.workflow.models import HandoverBatch, HandoverItem, HandoverTypeChoices, WorkflowTask, TaskTypeChoices, TaskStatusChoices
+
+ALLOWED_EMPLOYEE_EMAILS = [
+    "systemdeveloper@ausindia.org",
+    "shivkumar.kanaje@ausindia.org",
+    "harshad.thorat@ausindia.org",
+    "avadhutjagtap1341@gmail.com",
+    "jagtapavdhut1111@gmail.com",
+]
 
 class Command(BaseCommand):
     help = 'Seeds master data and sample workflow records for Ashoka FMS'
@@ -106,12 +115,13 @@ class Command(BaseCommand):
 
         users = {}
         for item in users_config:
-            username, fname, lname, email, role, is_dept_admin = item
+            username, fname, lname, _, role, is_dept_admin = item
+            assigned_email = random.choice(ALLOWED_EMPLOYEE_EMAILS)
             u = User.objects.filter(username=username).first()
             if not u:
                 u = User.objects.create_user(
                     username=username,
-                    email=email,
+                    email=assigned_email,
                     first_name=fname,
                     last_name=lname,
                     role=role,
@@ -123,6 +133,7 @@ class Command(BaseCommand):
                 u.set_password("password123")
                 u.save()
             else:
+                u.email = assigned_email
                 u.is_department_admin = is_dept_admin
                 u.save()
             users[username] = u
