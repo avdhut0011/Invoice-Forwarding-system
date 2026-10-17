@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FMS — Ashoka Education Foundation{% endblock %}</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: { 800: '#1e293b', 900: '#0f172a' },
+                        teal: { 600: '#087f8c', 700: '#06616b' },
+                        brand: { 500: '#2563eb', 600: '#1d4ed8' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .htmx-indicator { display: none; }
+        .htmx-request .htmx-indicator { display: inline-block; }
+        .htmx-request.htmx-indicator { display: inline-block; }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="h-full flex flex-col font-sans text-slate-800 antialiased" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    <!-- Navigation Bar -->
+    <nav class="bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Brand -->
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-teal-600 flex items-center justify-center font-bold text-xl text-white shadow-sm">
+                        FMS
+                    </div>
+                    <div>
+                        <span class="font-bold text-lg tracking-tight">Invoice Forwarding System</span>
+                        <span class="hidden md:inline-block text-xs text-slate-400 ml-2 border-l border-slate-700 pl-2">Ashoka Education Foundation</span>
+                    </div>
+                </div>
+
+                <!-- Department Nav Links -->
+                <div class="hidden md:flex items-center space-x-1 text-sm font-medium">
+                    <a href="{% url 'portal:dashboard' %}" class="px-3 py-2 rounded-md hover:bg-slate-800 transition {% if request.resolver_match.url_name == 'dashboard' %}bg-slate-800 text-teal-400{% else %}text-slate-300{% endif %}">
+                        Dashboard
+                    </a>
+                    <a href="{% url 'portal:store_portal' %}" class="px-3 py-2 rounded-md hover:bg-slate-800 transition {% if request.resolver_match.url_name == 'store_portal' %}bg-slate-800 text-teal-400{% else %}text-slate-300{% endif %}">
+                        Store
+                    </a>
+                    <a href="{% url 'portal:purchase_portal' %}" class="px-3 py-2 rounded-md hover:bg-slate-800 transition {% if request.resolver_match.url_name == 'purchase_portal' %}bg-slate-800 text-teal-400{% else %}text-slate-300{% endif %}">
+                        Purchase
+                    </a>
+                    <a href="{% url 'portal:accounts_portal' %}" class="px-3 py-2 rounded-md hover:bg-slate-800 transition {% if request.resolver_match.url_name == 'accounts_portal' %}bg-slate-800 text-teal-400{% else %}text-slate-300{% endif %}">
+                        Accounts
+                    </a>
+                    <a href="{% url 'reports:summary' %}" class="px-3 py-2 rounded-md hover:bg-slate-800 transition {% if 'reports' in request.resolver_match.namespace %}bg-slate-800 text-teal-400{% else %}text-slate-300{% endif %}">
+                        Reports
+                    </a>
+                    {% if user.is_staff %}
+                    <a href="/admin/" target="_blank" class="px-3 py-2 rounded-md text-amber-400 hover:bg-slate-800 transition">
+                        Admin ↗
+                    </a>
+                    {% endif %}
+                </div>
+
+                <!-- User Profile & Session -->
+                <div class="flex items-center gap-3">
+                    {% if user.is_authenticated %}
+                        <div class="text-right hidden sm:block">
+                            <div class="text-sm font-semibold text-slate-100">{{ user.get_full_name|default:user.username }}</div>
+                            <div class="text-xs text-teal-400 font-mono tracking-wider">{{ user.get_role_display }}</div>
+                        </div>
+                        <a href="{% url 'portal:logout' %}" class="text-xs bg-slate-800 hover:bg-red-900/60 text-slate-300 hover:text-red-200 px-3 py-1.5 rounded-lg border border-slate-700 transition">
+                            Logout
+                        </a>
+                    {% else %}
+                        <a href="{% url 'portal:login' %}" class="text-sm bg-teal-600 hover:bg-teal-500 text-white font-medium px-4 py-2 rounded-lg transition shadow-sm">
+                            Sign In
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Notification Toast Messages -->
+    {% if messages %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        {% for message in messages %}
+        <div class="p-4 mb-2 rounded-xl text-sm font-medium border flex items-center justify-between shadow-sm
+            {% if message.tags == 'success' %}bg-emerald-50 text-emerald-800 border-emerald-200
+            {% elif message.tags == 'error' %}bg-rose-50 text-rose-800 border-rose-200
+            {% elif message.tags == 'warning' %}bg-amber-50 text-amber-800 border-amber-200
+            {% else %}bg-sky-50 text-sky-800 border-sky-200{% endif %}">
+            <div class="flex items-center gap-2">
+                <span>{{ message }}</span>
+            </div>
+            <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-slate-600">✕</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content Body -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 text-slate-500 text-xs py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div>
+                &copy; 2026 <strong>Ashoka Education Foundation</strong>. All rights reserved. FMS v1.0 (Python Rebuild).
+            </div>
+            <div class="flex gap-4">
+                <span>Asia/Kolkata Timezone</span>
+                <span>PostgreSQL Active</span>
+                <span>Audit Logging Enabled</span>
+            </div>
+        </div>
+    </footer>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

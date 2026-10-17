@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — FMS Invoice Forwarding{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Enterprise Overview Dashboard</h1>
+            <p class="text-sm text-slate-500 mt-1">
+                Real-time tracking of material receipts, custody handovers, invoice allocations, and accounts processing.
+            </p>
+        </div>
+        <div class="flex items-center gap-2">
+            <a href="{% url 'portal:store_portal' %}" class="bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs px-4 py-2.5 rounded-xl shadow-sm transition">
+                + New Store Receipt
+            </a>
+            <a href="{% url 'portal:purchase_portal' %}" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs px-4 py-2.5 rounded-xl shadow-sm transition">
+                Link Bill (Purchase)
+            </a>
+        </div>
+    </div>
+
+    <!-- 5 KPI Summary Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <!-- Card 1 -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Receipts</div>
+            <div class="text-2xl font-black text-slate-900 mt-2">{{ total_receipts }}</div>
+            <div class="text-xs text-slate-500 mt-1">Across all units</div>
+        </div>
+        <!-- Card 2 -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="text-xs font-bold text-amber-500 uppercase tracking-wider">Pending Custody</div>
+            <div class="text-2xl font-black text-amber-600 mt-2">{{ pending_custody }}</div>
+            <div class="text-xs text-slate-500 mt-1">Awaiting physical receipt</div>
+        </div>
+        <!-- Card 3 -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="text-xs font-bold text-sky-500 uppercase tracking-wider">Unbilled GRNs</div>
+            <div class="text-2xl font-black text-sky-600 mt-2">{{ unbilled_grns }}</div>
+            <div class="text-xs text-slate-500 mt-1">Ready for Purchase match</div>
+        </div>
+        <!-- Card 4 -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="text-xs font-bold text-indigo-500 uppercase tracking-wider">In Accounts</div>
+            <div class="text-2xl font-black text-indigo-600 mt-2">{{ in_accounts }}</div>
+            <div class="text-xs text-slate-500 mt-1">Verification / Approval</div>
+        </div>
+        <!-- Card 5 -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="text-xs font-bold text-emerald-500 uppercase tracking-wider">Total Liability</div>
+            <div class="text-2xl font-black text-emerald-600 mt-2">₹{{ total_liability|floatformat:0 }}</div>
+            <div class="text-xs text-slate-500 mt-1">Authoritative invoice sum</div>
+        </div>
+    </div>
+
+    <!-- Filter Card -->
+    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+        <form method="get" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Search Keyword</label>
+                <input type="text" name="q" value="{{ query }}" placeholder="GRN, PO, Supplier, ST/BILL ID..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Unit</label>
+                <select name="unit" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none">
+                    <option value="">All Units</option>
+                    {% for u in units %}
+                        <option value="{{ u.id }}" {% if selected_unit == u.id|stringformat:"s" %}selected{% endif %}>{{ u.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Status</label>
+                <select name="status" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none">
+                    <option value="">All Statuses</option>
+                    <option value="PENDING_HANDOVER" {% if selected_status == 'PENDING_HANDOVER' %}selected{% endif %}>Pending Handover</option>
+                    <option value="HANDED_OVER" {% if selected_status == 'HANDED_OVER' %}selected{% endif %}>Handed Over</option>
+                    <option value="CUSTODY_ACKNOWLEDGED" {% if selected_status == 'CUSTODY_ACKNOWLEDGED' %}selected{% endif %}>Custody Acknowledged</option>
+                    <option value="BILL_LINKED" {% if selected_status == 'BILL_LINKED' %}selected{% endif %}>Bill Linked</option>
+                </select>
+            </div>
+            <div class="flex gap-2">
+                <button type="submit" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm py-2 px-4 rounded-lg transition">
+                    Filter
+                </button>
+                {% if query or selected_unit or selected_status %}
+                <a href="{% url 'portal:dashboard' %}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm py-2 px-4 rounded-lg transition text-center">
+                    Reset
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- FMS Records Table -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+            <h2 class="font-bold text-slate-900 text-base">FMS Active Transaction Records</h2>
+            <span class="text-xs text-slate-500">Showing {{ receipts|length }} records</span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-600">
+                <thead class="bg-slate-100 text-slate-700 uppercase text-xs font-bold border-b border-slate-200">
+                    <tr>
+                        <th class="py-3.5 px-4">ST ID</th>
+                        <th class="py-3.5 px-4">Unit &amp; Supplier</th>
+                        <th class="py-3.5 px-4">GRN &amp; PO</th>
+                        <th class="py-3.5 px-4">Material Date</th>
+                        <th class="py-3.5 px-4">Linked Bill</th>
+                        <th class="py-3.5 px-4 text-center">Status</th>
+                        <th class="py-3.5 px-4 text-center">Scans</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for r in receipts %}
+                    <tr class="hover:bg-slate-50/80 transition">
+                        <td class="py-3.5 px-4 font-mono font-bold text-teal-700 whitespace-nowrap">
+                            {{ r.st_number }}
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <div class="font-semibold text-slate-900">{{ r.supplier_name_raw }}</div>
+                            <div class="text-xs text-slate-500 truncate max-w-xs">{{ r.unit.name }}</div>
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <div class="font-mono text-xs font-semibold text-slate-800">GRN: {{ r.grn_number }}</div>
+                            <div class="text-xs text-slate-400">PO: {{ r.po_wo_number|default:"-" }}</div>
+                        </td>
+                        <td class="py-3.5 px-4 text-xs whitespace-nowrap">
+                            {{ r.material_date|date:"d/m/Y" }}
+                        </td>
+                        <td class="py-3.5 px-4">
+                            {% if r.bill_unique_id %}
+                                <span class="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                                    {{ r.bill_unique_id }}
+                                </span>
+                            {% else %}
+                                <span class="text-xs text-slate-400 italic">Not Linked</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3.5 px-4 text-center whitespace-nowrap">
+                            <span class="inline-block text-xs font-semibold px-2.5 py-1 rounded-full
+                                {% if r.status == 'BILL_LINKED' %}bg-emerald-100 text-emerald-800
+                                {% elif r.status == 'CUSTODY_ACKNOWLEDGED' %}bg-sky-100 text-sky-800
+                                {% elif r.status == 'HANDED_OVER' %}bg-amber-100 text-amber-800
+                                {% else %}bg-slate-100 text-slate-700{% endif %}">
+                                {{ r.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="py-3.5 px-4 text-center whitespace-nowrap">
+                            <div class="flex items-center justify-center gap-1.5">
+                                {% if r.invoice_scan %}
+                                    <a href="{{ r.invoice_scan.url }}" target="_blank" class="text-xs text-teal-600 hover:text-teal-800 font-semibold bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
+                                        Inv
+                                    </a>
+                                {% endif %}
+                                {% if r.grn_scan %}
+                                    <a href="{{ r.grn_scan.url }}" target="_blank" class="text-xs text-blue-600 hover:text-blue-800 font-semibold bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                                        GRN
+                                    </a>
+                                {% endif %}
+                                {% if not r.invoice_scan and not r.grn_scan %}
+                                    <span class="text-xs text-slate-300">-</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="py-8 text-center text-slate-400">No records found matching filters.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

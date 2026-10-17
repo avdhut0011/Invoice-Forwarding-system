@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+
+{% block title %}Store Department Portal — FMS{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Header -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <div class="flex items-center gap-2">
+                <span class="text-xl">📦</span>
+                <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Store Department Portal</h1>
+            </div>
+            <p class="text-sm text-slate-500 mt-1">
+                Record material receipts, upload GRN/vendor scans, and dispatch custody packets to Purchase representatives.
+            </p>
+        </div>
+        <div>
+            <a href="#handoverSection" class="bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs px-4 py-2.5 rounded-xl shadow-sm transition">
+                Handover Batch ({{ pending_handovers|length }})
+            </a>
+        </div>
+    </div>
+
+    <!-- Form & Handover Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- New Material Receipt Form (2 Cols) -->
+        <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <h2 class="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+                <span>📝</span> Record New Material Receipt
+            </h2>
+
+            <form method="post" action="{% url 'portal:store_submit' %}" enctype="multipart/form-data" class="space-y-4">
+                {% csrf_token %}
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                            Educational Unit <span class="text-red-500">*</span>
+                        </label>
+                        <select name="unit_id" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none">
+                            <option value="">- Select Unit -</option>
+                            {% for u in units %}
+                                <option value="{{ u.id }}">{{ u.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                            Material Received Date <span class="text-red-500">*</span>
+                        </label>
+                        <input type="date" name="material_date" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                            Supplier Name <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="supplier" required list="suppliersList" placeholder="e.g. Ashoka Stationers" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none">
+                        <datalist id="suppliersList">
+                            {% for s in suppliers %}
+                                <option value="{{ s.name }}">{{ s.name }}</option>
+                            {% endfor %}
+                        </datalist>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                            Document Type <span class="text-red-500">*</span>
+                        </label>
+                        <select name="doc_type" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none">
+                            <option value="PO">PO (Purchase Order)</option>
+                            <option value="WO">WO (Work Order)</option>
+                            <option value="INVOICE">Invoice Number</option>
+                            <option value="DC">DC (Delivery Challan)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                            PO / WO / Inv No. <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="po_wo_number" required placeholder="e.g. PO/2026/00142" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                            G.R.N. Number <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="grn_number" required placeholder="e.g. GRN-2026-081" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                            G.R.N. Date <span class="text-red-500">*</span>
+                        </label>
+                        <input type="date" name="grn_date" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">DC Number</label>
+                        <input type="text" name="dc_number" placeholder="Delivery Challan No." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Payment Category</label>
+                        <select name="payment_category" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none">
+                            <option value="Credit">Credit</option>
+                            <option value="Cash">Cash</option>
+                            <option value="IOU">IOU</option>
+                            <option value="Online">Online</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center pt-6">
+                        <label class="inline-flex items-center gap-2 cursor-pointer text-sm font-semibold text-slate-700">
+                            <input type="checkbox" name="is_invoice_received" value="1" class="w-4 h-4 text-teal-600 rounded">
+                            Supplier Invoice Received?
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                        Material Description <span class="text-red-500">*</span>
+                    </label>
+                    <textarea name="description" required rows="2" placeholder="Brief summary of items, quantity, condition..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none"></textarea>
+                </div>
+
+                <!-- File Attachments -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Upload Invoice Scan (PDF/Image)</label>
+                        <input type="file" name="invoice_scan" class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Upload GRN Scan (PDF/Image)</label>
+                        <input type="file" name="grn_scan" class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                            Purchase Person to Hand Over To <span class="text-red-500">*</span>
+                        </label>
+                        <select name="assigned_purchase_person_id" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none">
+                            <option value="">- Select Purchase Representative -</option>
+                            {% for p in purchase_staff %}
+                                <option value="{{ p.id }}">{{ p.get_full_name|default:p.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Store Remark</label>
+                        <input type="text" name="store_remark" placeholder="Optional notes for Purchase..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-teal-600 hover:bg-teal-500 text-white font-bold py-3 rounded-xl transition shadow-md text-sm">
+                    Submit Material Receipt (Generate ST ID)
+                </button>
+            </form>
+        </div>
+
+        <!-- Dispatch Custody Handover Batch (1 Col) -->
+        <div id="handoverSection" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+            <div>
+                <h2 class="text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
+                    <span>🚚</span> Dispatch Handover Batch
+                </h2>
+                <p class="text-xs text-slate-500 mb-4">
+                    Select pending physical packets to generate an authenticated Handover Batch (HB-XXXXX) to Purchase.
+                </p>
+
+                <form method="post" action="{% url 'portal:store_handover' %}" class="space-y-4">
+                    {% csrf_token %}
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                            Intended Purchase Recipient <span class="text-red-500">*</span>
+                        </label>
+                        <select name="recipient_id" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                            <option value="">- Select Recipient -</option>
+                            {% for p in purchase_staff %}
+                                <option value="{{ p.id }}">{{ p.get_full_name|default:p.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                            Select Pending Receipts
+                        </label>
+                        <div class="max-h-64 overflow-y-auto border border-slate-200 rounded-xl divide-y divide-slate-100 p-2 text-xs">
+                            {% for r in pending_handovers %}
+                            <label class="flex items-start gap-2 p-2 hover:bg-amber-50/60 rounded cursor-pointer">
+                                <input type="checkbox" name="receipt_ids" value="{{ r.id }}" class="mt-0.5 text-amber-600 rounded">
+                                <div>
+                                    <span class="font-mono font-bold text-slate-900">{{ r.st_number }}</span>
+                                    <span class="text-slate-500">GRN: {{ r.grn_number }}</span>
+                                    <div class="text-slate-400 truncate max-w-xs">{{ r.supplier_name_raw }}</div>
+                                </div>
+                            </label>
+                            {% empty %}
+                            <div class="py-4 text-center text-slate-400">No pending receipts to hand over.</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Checklist Summary</label>
+                        <input type="text" name="checklist" placeholder="e.g. 3 GRNs, 2 original vendor invoices" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-amber-500 outline-none">
+                    </div>
+
+                    <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 rounded-xl transition shadow-sm text-xs">
+                        Dispatch Handover Packet
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Receipts Table -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+            <h2 class="font-bold text-slate-900 text-base">Store Receipts Track Queue</h2>
+            <span class="text-xs text-slate-500">Recent {{ recent_receipts|length }} submissions</span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-600">
+                <thead class="bg-slate-100 text-slate-700 uppercase text-xs font-bold border-b border-slate-200">
+                    <tr>
+                        <th class="py-3 px-4">ST ID</th>
+                        <th class="py-3 px-4">GRN &amp; Date</th>
+                        <th class="py-3 px-4">Supplier</th>
+                        <th class="py-3 px-4">Assigned Purchase</th>
+                        <th class="py-3 px-4 text-center">Custody Status</th>
+                        <th class="py-3 px-4">Linked Bill</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for r in recent_receipts %}
+                    <tr class="hover:bg-slate-50/80 transition text-xs">
+                        <td class="py-3 px-4 font-mono font-bold text-teal-700">{{ r.st_number }}</td>
+                        <td class="py-3 px-4">
+                            <span class="font-mono font-semibold">{{ r.grn_number }}</span>
+                            <span class="text-slate-400">({{ r.grn_date|date:"d/m/Y" }})</span>
+                        </td>
+                        <td class="py-3 px-4 font-medium text-slate-900">{{ r.supplier_name_raw }}</td>
+                        <td class="py-3 px-4 text-slate-700">{{ r.assigned_purchase_person_raw|default:"Unassigned" }}</td>
+                        <td class="py-3 px-4 text-center">
+                            <span class="inline-block text-xs font-semibold px-2.5 py-0.5 rounded-full
+                                {% if r.status == 'BILL_LINKED' %}bg-emerald-100 text-emerald-800
+                                {% elif r.status == 'CUSTODY_ACKNOWLEDGED' %}bg-sky-100 text-sky-800
+                                {% elif r.status == 'HANDED_OVER' %}bg-amber-100 text-amber-800
+                                {% else %}bg-slate-100 text-slate-700{% endif %}">
+                                {{ r.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 font-mono font-bold text-blue-700">{{ r.bill_unique_id|default:"-" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="py-6 text-center text-slate-400">No store receipts found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

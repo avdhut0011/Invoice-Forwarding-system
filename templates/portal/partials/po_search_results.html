@@ -1,0 +1,30 @@
+{% if receipts %}
+<div class="border border-slate-200 rounded-xl overflow-hidden mt-3">
+    <div class="bg-slate-100 p-2.5 text-xs font-bold text-slate-700 flex justify-between items-center">
+        <span>Found {{ receipts|length }} Matching GRN(s) for this PO</span>
+        <span class="text-slate-500 font-normal">Check the GRNs to allocate this bill to:</span>
+    </div>
+    <div class="divide-y divide-slate-100 max-h-60 overflow-y-auto">
+        {% for r in receipts %}
+        <label class="flex items-start gap-3 p-3 hover:bg-teal-50/50 cursor-pointer text-xs">
+            <input type="checkbox" name="selected_receipt_ids" value="{{ r.id }}" class="mt-1 text-teal-600 rounded w-4 h-4" checked>
+            <div class="flex-1">
+                <div class="flex justify-between items-center">
+                    <span class="font-mono font-bold text-slate-900">{{ r.st_number }} — GRN: {{ r.grn_number }}</span>
+                    <span class="text-slate-500 font-mono">{{ r.grn_date|date:"d/m/Y" }}</span>
+                </div>
+                <div class="text-slate-600 mt-0.5">{{ r.description }}</div>
+                <div class="text-slate-400 mt-1 flex gap-4">
+                    <span>Supplier: <strong>{{ r.supplier_name_raw }}</strong></span>
+                    <span>Unit: <strong>{{ r.unit.name }}</strong></span>
+                </div>
+            </div>
+        </label>
+        {% endfor %}
+    </div>
+</div>
+{% else %}
+<div class="p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-xs mt-3">
+    No pending or unbilled GRNs found for this PO number. If this is a direct or non-PO expense, please use the <strong>Direct / N/A Bill</strong> tab.
+</div>
+{% endif %}
