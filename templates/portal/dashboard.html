@@ -1,71 +1,112 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard — FMS Invoice Forwarding{% endblock %}
+{% block title %}Dashboard — FMS Material Portal{% endblock %}
 
 {% block content %}
 <div class="space-y-6">
-    <!-- Header -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <!-- Top Action Bar -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-md-surface-container-lowest p-6 rounded-3xl border border-md-outline-variant/60 shadow-m3-1">
         <div>
-            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Enterprise Overview Dashboard</h1>
-            <p class="text-sm text-slate-500 mt-1">
-                Real-time tracking of material receipts, custody handovers, invoice allocations, and accounts processing.
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-md-primary text-2xl">dashboard</span>
+                <h1 class="text-2xl font-bold tracking-tight text-md-on-surface">Enterprise Overview</h1>
+            </div>
+            <p class="text-xs text-md-on-surface-variant mt-1 font-normal">
+                Real-time tracking of material custody, multi-GRN invoice allocations, and hierarchical sign-offs.
             </p>
         </div>
         <div class="flex items-center gap-2">
-            <a href="{% url 'portal:store_portal' %}" class="bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs px-4 py-2.5 rounded-xl shadow-sm transition">
-                + New Store Receipt
+            <a href="{% url 'portal:store_portal' %}" class="flex items-center gap-1.5 bg-md-surface-container-high hover:bg-md-surface-container-highest text-md-on-surface text-xs font-semibold px-4 py-2.5 rounded-full border border-md-outline-variant/60 transition shadow-xs">
+                <span class="material-symbols-outlined text-[18px]">add_box</span>
+                <span>New Store Receipt</span>
             </a>
-            <a href="{% url 'portal:purchase_portal' %}" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs px-4 py-2.5 rounded-xl shadow-sm transition">
-                Link Bill (Purchase)
+            <a href="{% url 'portal:purchase_portal' %}" class="flex items-center gap-1.5 bg-md-primary hover:bg-[#004f80] text-white text-xs font-semibold px-5 py-2.5 rounded-full shadow-m3-1 hover:shadow-m3-2 transition">
+                <span class="material-symbols-outlined text-[18px]">link</span>
+                <span>Link Supplier Bill</span>
             </a>
         </div>
     </div>
 
-    <!-- 5 KPI Summary Cards -->
+    <!-- 5 Material Elevated KPI Metric Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        <!-- Card 1 -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Receipts</div>
-            <div class="text-2xl font-black text-slate-900 mt-2">{{ total_receipts }}</div>
-            <div class="text-xs text-slate-500 mt-1">Across all units</div>
+        <!-- Card 1: Total Receipts -->
+        <div class="bg-md-surface-container-lowest p-5 rounded-3xl border border-md-outline-variant/50 shadow-m3-1 hover:shadow-m3-2 transition">
+            <div class="flex justify-between items-start">
+                <span class="text-[11px] font-bold text-md-on-surface-variant uppercase tracking-wider">Total Receipts</span>
+                <span class="w-8 h-8 rounded-full bg-md-surface-container flex items-center justify-center text-md-secondary">
+                    <span class="material-symbols-outlined text-[18px]">inventory_2</span>
+                </span>
+            </div>
+            <div class="text-2xl font-black text-md-on-surface mt-2">{{ total_receipts }}</div>
+            <div class="text-[11px] text-md-secondary mt-1">Across all educational units</div>
         </div>
-        <!-- Card 2 -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <div class="text-xs font-bold text-amber-500 uppercase tracking-wider">Pending Custody</div>
+
+        <!-- Card 2: Pending Custody -->
+        <div class="bg-md-surface-container-lowest p-5 rounded-3xl border border-amber-200/80 shadow-m3-1 hover:shadow-m3-2 transition">
+            <div class="flex justify-between items-start">
+                <span class="text-[11px] font-bold text-amber-700 uppercase tracking-wider">Pending Custody</span>
+                <span class="w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center text-amber-700">
+                    <span class="material-symbols-outlined text-[18px]">hourglass_top</span>
+                </span>
+            </div>
             <div class="text-2xl font-black text-amber-600 mt-2">{{ pending_custody }}</div>
-            <div class="text-xs text-slate-500 mt-1">Awaiting physical receipt</div>
+            <div class="text-[11px] text-amber-800/80 mt-1">Awaiting physical receipt</div>
         </div>
-        <!-- Card 3 -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <div class="text-xs font-bold text-sky-500 uppercase tracking-wider">Unbilled GRNs</div>
-            <div class="text-2xl font-black text-sky-600 mt-2">{{ unbilled_grns }}</div>
-            <div class="text-xs text-slate-500 mt-1">Ready for Purchase match</div>
+
+        <!-- Card 3: Unbilled GRNs -->
+        <div class="bg-md-surface-container-lowest p-5 rounded-3xl border border-blue-200/80 shadow-m3-1 hover:shadow-m3-2 transition">
+            <div class="flex justify-between items-start">
+                <span class="text-[11px] font-bold text-blue-700 uppercase tracking-wider">Unbilled GRNs</span>
+                <span class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-700">
+                    <span class="material-symbols-outlined text-[18px]">receipt_long</span>
+                </span>
+            </div>
+            <div class="text-2xl font-black text-blue-600 mt-2">{{ unbilled_grns }}</div>
+            <div class="text-[11px] text-blue-800/80 mt-1">Ready for Purchase match</div>
         </div>
-        <!-- Card 4 -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <div class="text-xs font-bold text-indigo-500 uppercase tracking-wider">In Accounts</div>
-            <div class="text-2xl font-black text-indigo-600 mt-2">{{ in_accounts }}</div>
-            <div class="text-xs text-slate-500 mt-1">Verification / Approval</div>
+
+        <!-- Card 4: In Accounts -->
+        <div class="bg-md-surface-container-lowest p-5 rounded-3xl border border-purple-200/80 shadow-m3-1 hover:shadow-m3-2 transition">
+            <div class="flex justify-between items-start">
+                <span class="text-[11px] font-bold text-purple-700 uppercase tracking-wider">In Accounts</span>
+                <span class="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center text-purple-700">
+                    <span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
+                </span>
+            </div>
+            <div class="text-2xl font-black text-purple-600 mt-2">{{ in_accounts }}</div>
+            <div class="text-[11px] text-purple-800/80 mt-1">Review &amp; Tier sign-off</div>
         </div>
-        <!-- Card 5 -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <div class="text-xs font-bold text-emerald-500 uppercase tracking-wider">Total Liability</div>
+
+        <!-- Card 5: Total Liability -->
+        <div class="bg-md-surface-container-lowest p-5 rounded-3xl border border-emerald-200/80 shadow-m3-1 hover:shadow-m3-2 transition">
+            <div class="flex justify-between items-start">
+                <span class="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">Total Liability</span>
+                <span class="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-700">
+                    <span class="material-symbols-outlined text-[18px]">payments</span>
+                </span>
+            </div>
             <div class="text-2xl font-black text-emerald-600 mt-2">₹{{ total_liability|floatformat:0 }}</div>
-            <div class="text-xs text-slate-500 mt-1">Authoritative invoice sum</div>
+            <div class="text-[11px] text-emerald-800/80 mt-1">Gross authoritative total</div>
         </div>
     </div>
 
-    <!-- Filter Card -->
-    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+    <!-- Material Filter Surface -->
+    <div class="bg-md-surface-container-lowest p-5 rounded-3xl border border-md-outline-variant/60 shadow-m3-1">
         <form method="get" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
             <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Search Keyword</label>
-                <input type="text" name="q" value="{{ query }}" placeholder="GRN, PO, Supplier, ST/BILL ID..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none">
+                <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px] text-md-primary">search</span>
+                    <span>Search Keyword</span>
+                </label>
+                <input type="text" name="q" value="{{ query }}" placeholder="GRN, PO, Supplier, ST/BILL ID..." 
+                       class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition">
             </div>
             <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Unit</label>
-                <select name="unit" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none">
+                <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px] text-md-primary">domain</span>
+                    <span>Educational Unit</span>
+                </label>
+                <select name="unit" class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition">
                     <option value="">All Units</option>
                     {% for u in units %}
                         <option value="{{ u.id }}" {% if selected_unit == u.id|stringformat:"s" %}selected{% endif %}>{{ u.name }}</option>
@@ -73,8 +114,11 @@
                 </select>
             </div>
             <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Status</label>
-                <select name="status" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none">
+                <label class="block text-xs font-bold text-md-on-surface-variant uppercase tracking-wider mb-1 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px] text-md-primary">filter_list</span>
+                    <span>Status</span>
+                </label>
+                <select name="status" class="w-full bg-md-surface border border-md-outline-variant rounded-2xl px-3.5 py-2.5 text-xs text-md-on-surface focus:border-md-primary focus:ring-2 focus:ring-md-primary/20 outline-none transition">
                     <option value="">All Statuses</option>
                     <option value="PENDING_HANDOVER" {% if selected_status == 'PENDING_HANDOVER' %}selected{% endif %}>Pending Handover</option>
                     <option value="HANDED_OVER" {% if selected_status == 'HANDED_OVER' %}selected{% endif %}>Handed Over</option>
@@ -83,11 +127,12 @@
                 </select>
             </div>
             <div class="flex gap-2">
-                <button type="submit" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm py-2 px-4 rounded-lg transition">
-                    Filter
+                <button type="submit" class="flex-1 flex items-center justify-center gap-1.5 bg-md-primary hover:bg-[#004f80] text-white font-bold text-xs py-2.5 px-4 rounded-full shadow-m3-1 transition">
+                    <span class="material-symbols-outlined text-[16px]">tune</span>
+                    <span>Filter</span>
                 </button>
                 {% if query or selected_unit or selected_status %}
-                <a href="{% url 'portal:dashboard' %}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm py-2 px-4 rounded-lg transition text-center">
+                <a href="{% url 'portal:dashboard' %}" class="flex items-center justify-center bg-md-surface-container hover:bg-md-surface-container-high text-md-on-surface font-semibold text-xs py-2.5 px-4 rounded-full border border-md-outline-variant/60 transition">
                     Reset
                 </a>
                 {% endif %}
@@ -95,81 +140,93 @@
         </form>
     </div>
 
-    <!-- FMS Records Table -->
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-            <h2 class="font-bold text-slate-900 text-base">FMS Active Transaction Records</h2>
-            <span class="text-xs text-slate-500">Showing {{ receipts|length }} records</span>
+    <!-- Material Data Table Surface -->
+    <div class="bg-md-surface-container-lowest rounded-3xl border border-md-outline-variant/60 shadow-m3-1 overflow-hidden">
+        <div class="p-5 border-b border-md-outline-variant/40 flex justify-between items-center bg-md-surface-container-low">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-md-primary">table_rows</span>
+                <h2 class="font-bold text-md-on-surface text-sm">FMS Master Ledger Records</h2>
+            </div>
+            <span class="text-[11px] font-bold px-3 py-1 bg-md-surface-container-highest rounded-full text-md-secondary">
+                {{ receipts|length }} entries
+            </span>
         </div>
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm text-slate-600">
-                <thead class="bg-slate-100 text-slate-700 uppercase text-xs font-bold border-b border-slate-200">
+            <table class="w-full text-left text-xs text-md-on-surface">
+                <thead class="bg-md-surface-container text-md-on-surface-variant uppercase text-[10px] font-bold tracking-wider border-b border-md-outline-variant/40">
                     <tr>
-                        <th class="py-3.5 px-4">ST ID</th>
-                        <th class="py-3.5 px-4">Unit &amp; Supplier</th>
-                        <th class="py-3.5 px-4">GRN &amp; PO</th>
-                        <th class="py-3.5 px-4">Material Date</th>
-                        <th class="py-3.5 px-4">Linked Bill</th>
-                        <th class="py-3.5 px-4 text-center">Status</th>
-                        <th class="py-3.5 px-4 text-center">Scans</th>
+                        <th class="py-3 px-4">ST ID</th>
+                        <th class="py-3 px-4">Unit &amp; Supplier</th>
+                        <th class="py-3 px-4">GRN &amp; Order</th>
+                        <th class="py-3 px-4">Material Date</th>
+                        <th class="py-3 px-4">Linked Bill</th>
+                        <th class="py-3 px-4 text-center">Status</th>
+                        <th class="py-3 px-4 text-center">Scans</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100">
+                <tbody class="divide-y divide-md-outline-variant/30">
                     {% for r in receipts %}
-                    <tr class="hover:bg-slate-50/80 transition">
-                        <td class="py-3.5 px-4 font-mono font-bold text-teal-700 whitespace-nowrap">
+                    <tr class="hover:bg-md-surface-container-low/70 transition">
+                        <td class="py-3 px-4 font-mono font-bold text-md-primary whitespace-nowrap">
                             {{ r.st_number }}
                         </td>
-                        <td class="py-3.5 px-4">
-                            <div class="font-semibold text-slate-900">{{ r.supplier_name_raw }}</div>
-                            <div class="text-xs text-slate-500 truncate max-w-xs">{{ r.unit.name }}</div>
+                        <td class="py-3 px-4">
+                            <div class="font-bold text-md-on-surface">{{ r.supplier_name_raw }}</div>
+                            <div class="text-[11px] text-md-secondary truncate max-w-xs">{{ r.unit.name }}</div>
                         </td>
-                        <td class="py-3.5 px-4">
-                            <div class="font-mono text-xs font-semibold text-slate-800">GRN: {{ r.grn_number }}</div>
-                            <div class="text-xs text-slate-400">PO: {{ r.po_wo_number|default:"-" }}</div>
+                        <td class="py-3 px-4">
+                            <div class="font-mono text-xs font-bold text-md-on-surface">GRN: {{ r.grn_number }}</div>
+                            <div class="text-[10px] text-md-secondary">PO: {{ r.po_wo_number|default:"-" }}</div>
                         </td>
-                        <td class="py-3.5 px-4 text-xs whitespace-nowrap">
+                        <td class="py-3 px-4 whitespace-nowrap text-md-secondary">
                             {{ r.material_date|date:"d/m/Y" }}
                         </td>
-                        <td class="py-3.5 px-4">
+                        <td class="py-3 px-4 whitespace-nowrap">
                             {% if r.bill_unique_id %}
-                                <span class="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                                <span class="font-mono text-[11px] font-bold text-blue-800 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">
                                     {{ r.bill_unique_id }}
                                 </span>
                             {% else %}
-                                <span class="text-xs text-slate-400 italic">Not Linked</span>
+                                <span class="text-[11px] text-md-outline italic">Unlinked</span>
                             {% endif %}
                         </td>
-                        <td class="py-3.5 px-4 text-center whitespace-nowrap">
-                            <span class="inline-block text-xs font-semibold px-2.5 py-1 rounded-full
-                                {% if r.status == 'BILL_LINKED' %}bg-emerald-100 text-emerald-800
-                                {% elif r.status == 'CUSTODY_ACKNOWLEDGED' %}bg-sky-100 text-sky-800
-                                {% elif r.status == 'HANDED_OVER' %}bg-amber-100 text-amber-800
-                                {% else %}bg-slate-100 text-slate-700{% endif %}">
-                                {{ r.get_status_display }}
+                        <td class="py-3 px-4 text-center whitespace-nowrap">
+                            <span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-0.5 rounded-full
+                                {% if r.status == 'BILL_LINKED' %}bg-md-success-container text-md-success border border-emerald-300
+                                {% elif r.status == 'CUSTODY_ACKNOWLEDGED' %}bg-sky-100 text-sky-900 border border-sky-300
+                                {% elif r.status == 'HANDED_OVER' %}bg-amber-100 text-amber-900 border border-amber-300
+                                {% else %}bg-md-surface-container-high text-md-secondary border border-md-outline-variant{% endif %}">
+                                <span class="w-1.5 h-1.5 rounded-full 
+                                    {% if r.status == 'BILL_LINKED' %}bg-emerald-600
+                                    {% elif r.status == 'CUSTODY_ACKNOWLEDGED' %}bg-sky-600
+                                    {% elif r.status == 'HANDED_OVER' %}bg-amber-600
+                                    {% else %}bg-slate-500{% endif %}"></span>
+                                <span>{{ r.get_status_display }}</span>
                             </span>
                         </td>
-                        <td class="py-3.5 px-4 text-center whitespace-nowrap">
+                        <td class="py-3 px-4 text-center whitespace-nowrap">
                             <div class="flex items-center justify-center gap-1.5">
                                 {% if r.invoice_scan %}
-                                    <a href="{{ r.invoice_scan.url }}" target="_blank" class="text-xs text-teal-600 hover:text-teal-800 font-semibold bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
-                                        Inv
+                                    <a href="{{ r.invoice_scan.url }}" target="_blank" title="View Invoice Scan" 
+                                       class="p-1 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-700 transition">
+                                        <span class="material-symbols-outlined text-[16px]">receipt</span>
                                     </a>
                                 {% endif %}
                                 {% if r.grn_scan %}
-                                    <a href="{{ r.grn_scan.url }}" target="_blank" class="text-xs text-blue-600 hover:text-blue-800 font-semibold bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
-                                        GRN
+                                    <a href="{{ r.grn_scan.url }}" target="_blank" title="View GRN Scan" 
+                                       class="p-1 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition">
+                                        <span class="material-symbols-outlined text-[16px]">file_copy</span>
                                     </a>
                                 {% endif %}
                                 {% if not r.invoice_scan and not r.grn_scan %}
-                                    <span class="text-xs text-slate-300">-</span>
+                                    <span class="text-md-outline-variant">-</span>
                                 {% endif %}
                             </div>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="7" class="py-8 text-center text-slate-400">No records found matching filters.</td>
+                        <td colspan="7" class="py-8 text-center text-md-secondary">No records found matching filters.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
