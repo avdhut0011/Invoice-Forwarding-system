@@ -7,6 +7,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('apps.portal.urls', namespace='portal')),
     path('reports/', include('apps.reports.urls', namespace='reports')),
+    path('api/', include('apps.api.urls', namespace='api')),
 ]
 
 if settings.DEBUG:

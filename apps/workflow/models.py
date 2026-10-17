@@ -129,3 +129,50 @@ class ApprovalDecision(models.Model):
     decision = models.CharField(max_length=20, choices=ApprovalDecisionChoices.choices)
     comments = models.TextField(blank=True, null=True)
     decided_at = models.DateTimeField(default=timezone.now)
+
+class ApprovalThreshold(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=150)
+    unit = models.ForeignKey(Unit, on_delete=models.CASCADE, null=True, blank=True, related_name='approval_thresholds')
+    min_amount = models.DecimalField(max_digits=14, decimal_places=2, default=0.00)
+    max_amount = models.DecimalField(max_digits=14, decimal_places=2, null=True, blank=True)
+    required_role = models.CharField(max_length=20, default='ACCOUNTS')
+    tier_level = models.PositiveIntegerField(default=1)
+    can_self_approve = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['tier_level', 'min_amount']
+
+    def __str__(self):
+        max_str = f"₹{self.max_amount}" if self.max_amount else "No Limit"
+        unit_str = f" ({self.unit.name})" if self.unit else " (Global)"
+        return f"Tier {self.tier_level}: {self.name} [₹{self.min_amount} - {max_str}] -> {self.required_role}{unit_str}"
+
+class StepStatusChoices(models.TextChoices):
+    PENDING = 'PENDING', 'Pending Approval'
+    APPROVED = 'APPROVED', 'Approved'
+    REJECTED = 'REJECTED', 'Rejected'
+    RETURNED = 'RETURNED', 'Returned'
+    SKIPPED = 'SKIPPED', 'Skipped'
+
+class InvoiceApprovalStep(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='approval_steps')
+    threshold = models.ForeignKey(ApprovalThreshold, on_delete=models.SET_NULL, null=True, blank=True)
+    tier_level = models.PositiveIntegerField(default=1)
+    required_role = models.CharField(max_length=20, default='ACCOUNTS')
+    status = models.CharField(max_length=20, choices=StepStatusChoices.choices, default=StepStatusChoices.PENDING, db_index=True)
+    assigned_to = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_approval_steps')
+    approved_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='completed_approval_steps')
+    comments = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    decided_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        ordering = ['tier_level']
+
+    def __str__(self):
+        return f"{self.invoice.bill_unique_id} - Tier {self.tier_level} ({self.required_role}): {self.status}"
+

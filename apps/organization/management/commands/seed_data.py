@@ -321,4 +321,41 @@ class Command(BaseCommand):
             }
         )
 
+        # 9. Multi-Tier Approval Threshold Matrix (Configurable)
+        from apps.workflow.models import ApprovalThreshold
+        ApprovalThreshold.objects.get_or_create(
+            tier_level=1,
+            defaults={
+                "name": "Standard Accounts Verification & Approval",
+                "min_amount": Decimal("0.00"),
+                "max_amount": Decimal("50000.00"),
+                "required_role": "ACCOUNTS",
+                "can_self_approve": False,
+                "is_active": True
+            }
+        )
+        ApprovalThreshold.objects.get_or_create(
+            tier_level=2,
+            defaults={
+                "name": "Managerial Finance Approval (> ₹50,000)",
+                "min_amount": Decimal("50000.01"),
+                "max_amount": Decimal("500000.00"),
+                "required_role": "MANAGER",
+                "can_self_approve": False,
+                "is_active": True
+            }
+        )
+        ApprovalThreshold.objects.get_or_create(
+            tier_level=3,
+            defaults={
+                "name": "Executive / Director Approval (> ₹5,00,000)",
+                "min_amount": Decimal("500000.01"),
+                "max_amount": None,
+                "required_role": "ADMIN",
+                "can_self_approve": False,
+                "is_active": True
+            }
+        )
+
         self.stdout.write(self.style.SUCCESS("Master data and sample workflow records successfully seeded!"))
+

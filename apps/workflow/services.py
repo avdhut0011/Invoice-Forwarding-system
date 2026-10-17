@@ -305,37 +305,149 @@ def return_invoice_for_correction(user, invoice_id, reason):
     return invoice
 
 @transaction.atomic
-def approve_invoice(user, invoice_id, comments=""):
+def setup_invoice_approval_hierarchy(invoice):
     """
-    Records authoritative ApprovalDecision, transitions invoice to APPROVED.
+    Evaluates configurable ApprovalThreshold rules for the invoice's gross amount and unit.
+    Generates ordered InvoiceApprovalStep records.
     """
+    from apps.workflow.models import ApprovalThreshold, InvoiceApprovalStep, StepStatusChoices
+    from django.db.models import Q
+
+    # Delete any unapproved existing steps if re-evaluating
+    invoice.approval_steps.filter(status=StepStatusChoices.PENDING).delete()
+
+    thresholds = ApprovalThreshold.objects.filter(
+        Q(unit=invoice.unit) | Q(unit__isnull=True),
+        is_active=True,
+        min_amount__lte=invoice.gross_amount
+    ).order_by('tier_level', 'min_amount')
+
+    # If no custom threshold configured, fallback to standard Tier 1 (Accounts)
+    if not thresholds.exists():
+        default_thresh = ApprovalThreshold.objects.filter(tier_level=1, is_active=True).first()
+        InvoiceApprovalStep.objects.create(
+            invoice=invoice,
+            threshold=default_thresh,
+            tier_level=1,
+            required_role='ACCOUNTS',
+            status=StepStatusChoices.PENDING
+        )
+        return invoice.approval_steps.all()
+
+    for thresh in thresholds:
+        InvoiceApprovalStep.objects.create(
+            invoice=invoice,
+            threshold=thresh,
+            tier_level=thresh.tier_level,
+            required_role=thresh.required_role,
+            status=StepStatusChoices.PENDING
+        )
+
+    return invoice.approval_steps.all()
+
+@transaction.atomic
+def process_step_approval(user, invoice_id, comments=""):
+    """
+    Processes the next pending tier approval in the hierarchical approval matrix.
+    Enforces role authority, self-approval prevention, and multi-tier progression.
+    """
+    from apps.workflow.models import InvoiceApprovalStep, StepStatusChoices, ApprovalDecision
+
     invoice = Invoice.objects.select_for_update().get(id=invoice_id)
-    invoice.status = InvoiceStatusChoices.APPROVED
-    invoice.save(update_fields=['status', 'updated_at'])
+    
+    # Ensure approval hierarchy steps are setup
+    steps = invoice.approval_steps.filter(status=StepStatusChoices.PENDING).order_by('tier_level')
+    if not steps.exists():
+        setup_invoice_approval_hierarchy(invoice)
+        steps = invoice.approval_steps.filter(status=StepStatusChoices.PENDING).order_by('tier_level')
 
-    ApprovalDecision.objects.create(
-        invoice=invoice,
-        approver=user,
-        decision="APPROVED",
-        comments=comments
-    )
+    current_step = steps.first()
+    if not current_step:
+        # All steps already approved, just ensure invoice is APPROVED
+        invoice.status = InvoiceStatusChoices.APPROVED
+        invoice.save(update_fields=['status', 'updated_at'])
+        return invoice
 
-    AuditEvent.objects.create(
-        actor=user,
-        actor_username=user.username,
-        action="APPROVE_INVOICE",
-        entity_type="Invoice",
-        entity_id=str(invoice.id),
-        business_reference=invoice.bill_unique_id,
-        after_state={"status": invoice.status, "comments": comments}
+    # Authority & Role Check
+    user_role = getattr(user, 'role', '')
+    is_authorized = (
+        user.is_superuser or 
+        user_role == 'ADMIN' or
+        user_role == current_step.required_role or
+        (current_step.required_role == 'ACCOUNTS' and user.is_accounts_staff) or
+        (current_step.required_role == 'MANAGER' and user.is_manager_or_admin)
     )
+    if not is_authorized:
+        raise ValueError(f"You do not possess the required role ({current_step.required_role}) for Tier {current_step.tier_level} approval.")
 
-    OutboxEvent.objects.create(
-        event_type="INVOICE_APPROVED",
-        recipient_name=invoice.purchase_person_raw,
-        recipient_email=invoice.submitter_email or invoice.submitted_by.email,
-        subject=f"Approved: Invoice {invoice.bill_unique_id} - ₹{invoice.gross_amount}",
-        payload={"bill_id": invoice.bill_unique_id, "approver": user.username, "amount": str(invoice.gross_amount)}
-    )
+    # Self-Approval Check
+    if current_step.threshold and not current_step.threshold.can_self_approve:
+        if user == invoice.submitted_by:
+            raise ValueError(f"Segregation of duties violation: Self-approval is prohibited for Tier {current_step.tier_level}.")
+
+    # Approve this step
+    current_step.status = StepStatusChoices.APPROVED
+    current_step.approved_by = user
+    current_step.comments = comments
+    current_step.decided_at = timezone.now()
+    current_step.save()
+
+    # Check remaining pending steps
+    remaining_steps = invoice.approval_steps.filter(status=StepStatusChoices.PENDING)
+    if remaining_steps.exists():
+        next_step = remaining_steps.first()
+        invoice.status = InvoiceStatusChoices.APPROVAL_PENDING
+        invoice.save(update_fields=['status', 'updated_at'])
+
+        AuditEvent.objects.create(
+            actor=user,
+            actor_username=user.username,
+            action=f"APPROVE_TIER_{current_step.tier_level}",
+            entity_type="Invoice",
+            entity_id=str(invoice.id),
+            business_reference=invoice.bill_unique_id,
+            after_state={
+                "tier_approved": current_step.tier_level,
+                "next_tier_required": next_step.tier_level,
+                "next_role": next_step.required_role
+            }
+        )
+    else:
+        # Final tier approved! Mark invoice APPROVED
+        invoice.status = InvoiceStatusChoices.APPROVED
+        invoice.save(update_fields=['status', 'updated_at'])
+
+        ApprovalDecision.objects.create(
+            invoice=invoice,
+            approver=user,
+            decision="APPROVED",
+            comments=f"All approval tiers completed. Final sign-off by {user.get_full_name() or user.username}."
+        )
+
+        AuditEvent.objects.create(
+            actor=user,
+            actor_username=user.username,
+            action="FINAL_APPROVE_INVOICE",
+            entity_type="Invoice",
+            entity_id=str(invoice.id),
+            business_reference=invoice.bill_unique_id,
+            after_state={"status": invoice.status, "comments": comments}
+        )
+
+        OutboxEvent.objects.create(
+            event_type="INVOICE_APPROVED",
+            recipient_name=invoice.purchase_person_raw,
+            recipient_email=invoice.submitter_email or invoice.submitted_by.email,
+            subject=f"Approved: Invoice {invoice.bill_unique_id} - ₹{invoice.gross_amount}",
+            payload={"bill_id": invoice.bill_unique_id, "final_approver": user.username, "amount": str(invoice.gross_amount)}
+        )
 
     return invoice
+
+@transaction.atomic
+def approve_invoice(user, invoice_id, comments=""):
+    """
+    Public entry point for approving an invoice: runs through the approval matrix.
+    """
+    return process_step_approval(user, invoice_id, comments=comments)
+

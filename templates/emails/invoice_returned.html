@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f1f5f9; margin: 0; padding: 20px; color: #1e293b; }
+        .card { max-width: 650px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border: 1px solid #e2e8f0; }
+        .header { background: #991b1b; padding: 24px; color: #ffffff; }
+        .header h1 { margin: 0; font-size: 20px; font-weight: 700; }
+        .badge { display: inline-block; padding: 3px 10px; background: #ffffff; color: #991b1b; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
+        .content { padding: 24px; font-size: 14px; line-height: 1.6; }
+        .reason-box { background: #fff1f2; border: 1px solid #fecdd3; border-left: 4px solid #e11d48; padding: 14px 18px; border-radius: 8px; margin: 18px 0; font-size: 13px; color: #881337; }
+        .btn { display: inline-block; padding: 12px 24px; background: #e11d48; color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 14px; margin-top: 14px; text-align: center; }
+        .footer { background: #f8fafc; padding: 16px 24px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #e2e8f0; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="header">
+            <span class="badge">Action Required</span>
+            <h1>Invoice Returned for Correction</h1>
+        </div>
+        <div class="content">
+            <p>Hello <strong>{{ recipient_name }}</strong>,</p>
+            <p>Invoice <strong>{{ bill_id }}</strong> (Supplier Invoice No: <strong>{{ invoice_number }}</strong>) has been returned for correction by Accounts representative <strong>{{ returned_by }}</strong>.</p>
+
+            <div class="reason-box">
+                <strong>Reason for Return:</strong><br>
+                {{ reason }}
+            </div>
+
+            <p>An open correction task has been assigned to your queue. Please rectify the discrepancies or supply missing attachments and resubmit.</p>
+
+            <div style="text-align: center; margin: 25px 0;">
+                <a href="{{ action_url }}" class="btn">Open Correction Task</a>
+            </div>
+        </div>
+        <div class="footer">
+            &copy; 2026 Ashoka Education Foundation FMS. Automated system message.
+        </div>
+    </div>
+</body>
+</html>

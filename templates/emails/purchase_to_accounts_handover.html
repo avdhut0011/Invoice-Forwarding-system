@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f1f5f9; margin: 0; padding: 20px; color: #1e293b; }
+        .card { max-width: 650px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border: 1px solid #e2e8f0; }
+        .header { background: #0f172a; padding: 24px; color: #ffffff; }
+        .header h1 { margin: 0; font-size: 20px; font-weight: 700; }
+        .header p { margin: 6px 0 0 0; font-size: 13px; color: #94a3b8; }
+        .badge { display: inline-block; padding: 3px 10px; background: #2563eb; color: #ffffff; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
+        .content { padding: 24px; font-size: 14px; line-height: 1.6; }
+        .meta-table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 13px; }
+        .meta-table th { background: #f8fafc; padding: 8px 12px; text-align: left; color: #64748b; border: 1px solid #e2e8f0; font-weight: 600; }
+        .meta-table td { padding: 8px 12px; border: 1px solid #e2e8f0; }
+        .btn { display: inline-block; padding: 12px 24px; background: #2563eb; color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 14px; margin-top: 14px; text-align: center; }
+        .footer { background: #f8fafc; padding: 16px 24px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #e2e8f0; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="header">
+            <span class="badge">Purchase to Accounts Forwarding</span>
+            <h1>Supplier Invoice Ready for Review</h1>
+            <p>Ashoka Education Foundation — Finance &amp; Accounts Processing</p>
+        </div>
+        <div class="content">
+            <p>Hello <strong>Accounts Team</strong>,</p>
+            <p>Purchase representative <strong>{{ sender_name }}</strong> has processed and forwarded a new supplier invoice with linked GRN evidence.</p>
+
+            <table class="meta-table">
+                <tr><th>Bill Unique ID</th><td><strong>{{ bill_id }}</strong></td></tr>
+                <tr><th>Supplier</th><td><strong>{{ supplier_name }}</strong></td></tr>
+                <tr><th>Invoice Number</th><td>{{ invoice_number }}</td></tr>
+                <tr><th>Gross Amount</th><td><strong style="color: #059669; font-size: 15px;">₹{{ amount }}</strong></td></tr>
+                <tr><th>Unit</th><td>{{ unit_name }}</td></tr>
+                <tr><th>Linked GRN(s)</th><td>{{ linked_grns }}</td></tr>
+                <tr><th>Due Date</th><td>{{ due_date }}</td></tr>
+            </table>
+
+            <div style="text-align: center; margin: 25px 0;">
+                <a href="{{ action_url }}" class="btn">Review &amp; Verify in Accounts Portal</a>
+            </div>
+        </div>
+        <div class="footer">
+            &copy; 2026 Ashoka Education Foundation FMS. Automated system message.
+        </div>
+    </div>
+</body>
+</html>
