@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth import login
+from django.views.decorators.csrf import csrf_exempt
 from apps.organization.models import User
 from .decorators import get_home_url_for_user
 
@@ -49,14 +50,29 @@ def google_login_view(request):
     }
     return render(request, 'registration/google_dev_provider.html', context)
 
+@csrf_exempt
 def google_callback_view(request):
     """
-    Handles Google OAuth2 callback.
+    Handles Google OAuth2 callback and Google Identity Services credential POST.
     Verifies identity and maps to internal user role and unit.
     """
     verified_email = None
 
-    # Scenario A: Live Google OAuth authorization code flow
+    # Scenario A: Google Identity Services (GIS) / GSI ID Token (JWT)
+    credential = request.POST.get('credential')
+    if credential and settings.GOOGLE_CLIENT_ID:
+        try:
+            from google.oauth2 import id_token
+            from google.auth.transport import requests as google_requests
+            idinfo = id_token.verify_oauth2_token(
+                credential, google_requests.Request(), settings.GOOGLE_CLIENT_ID
+            )
+            verified_email = idinfo.get('email')
+        except Exception as e:
+            messages.error(request, f"Google token verification failed: {str(e)}")
+            return redirect('portal:login')
+
+    # Scenario B: Standard Google OAuth2 authorization code flow
     code = request.GET.get('code')
     if code and settings.GOOGLE_CLIENT_ID and settings.GOOGLE_CLIENT_SECRET:
         redirect_uri = settings.GOOGLE_OAUTH_REDIRECT_URI or request.build_absolute_uri(reverse('portal:google_callback'))
@@ -83,7 +99,7 @@ def google_callback_view(request):
             messages.error(request, f"Google authentication failed: {str(e)}")
             return redirect('portal:login')
 
-    # Scenario B: Development / Test Google authentication simulation
+    # Scenario C: Development / Test Google authentication simulation
     if not verified_email:
         verified_email = request.POST.get('email') or request.GET.get('email')
 
