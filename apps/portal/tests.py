@@ -183,3 +183,54 @@ class PortalViewTestCase(TestCase):
         self.assertEqual(lead.role, RoleChoices.ACCOUNTS)
         self.assertTrue(lead.is_department_admin)
         self.assertTrue(lead.is_accounts_admin)
+
+    def test_google_login_view(self):
+        # Unauthenticated user visiting google login page
+        response = self.client.get(reverse('portal:google_login'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'registration/google_dev_provider.html')
+
+        # Already authenticated user should be redirected to workspace
+        self.client.login(username="store_staff", password="password123")
+        auth_response = self.client.get(reverse('portal:google_login'))
+        self.assertEqual(auth_response.status_code, 302)
+        self.assertIn('/store/', auth_response.url)
+
+    def test_google_callback_single_user(self):
+        # Sign-in with store@test.com should log in store_user and redirect to store portal
+        response = self.client.post(reverse('portal:google_callback'), {'email': 'store@test.com'})
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/store/', response.url)
+        self.assertEqual(str(self.client.session['_auth_user_id']), str(self.store_user.id))
+
+    def test_google_callback_multiple_users_and_select(self):
+        # Create a second user sharing store@test.com
+        shared_user = User.objects.create_user(
+            username="store_assistant_shared",
+            password="password123",
+            role=RoleChoices.STORE,
+            primary_unit=self.unit,
+            email="store@test.com"
+        )
+
+        # Callback should render account picker
+        response = self.client.post(reverse('portal:google_callback'), {'email': 'store@test.com'})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'registration/google_account_picker.html')
+        self.assertEqual(self.client.session.get('pending_google_email'), 'store@test.com')
+
+        # Select the second user
+        select_response = self.client.post(reverse('portal:google_select_account'), {
+            'user_id': str(shared_user.id)
+        })
+        self.assertEqual(select_response.status_code, 302)
+        self.assertIn('/store/', select_response.url)
+        self.assertEqual(str(self.client.session['_auth_user_id']), str(shared_user.id))
+
+    def test_google_callback_unregistered_email(self):
+        # An unprovisioned email should be blocked with unregistered policy notice
+        response = self.client.post(reverse('portal:google_callback'), {'email': 'stranger@gmail.com'})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'registration/google_unregistered.html')
+        self.assertNotIn('_auth_user_id', self.client.session)
+

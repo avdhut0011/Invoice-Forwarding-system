@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from . import user_views
+from . import oauth_views
 
 app_name = 'portal'
 
@@ -8,6 +9,11 @@ urlpatterns = [
     # Auth
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
+
+    # Google Sign-In OAuth
+    path('oauth/google/', oauth_views.google_login_view, name='google_login'),
+    path('oauth/google/callback/', oauth_views.google_callback_view, name='google_callback'),
+    path('oauth/google/select-account/', oauth_views.google_select_account_view, name='google_select_account'),
 
     # Dashboard
     path('', views.dashboard_view, name='dashboard'),

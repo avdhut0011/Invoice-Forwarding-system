@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50 antialiased">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in with Google — Ashoka FMS</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="h-full flex items-center justify-center p-4 bg-slate-100/60 text-slate-800">
+    <div class="max-w-md w-full bg-white border border-slate-200/90 rounded-3xl p-8 shadow-xl">
+        <!-- Google Brand Header -->
+        <div class="text-center mb-6">
+            <div class="inline-flex items-center justify-center mb-3">
+                <!-- Official Google Multi-color G Logo -->
+                <svg class="w-10 h-10" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+            </div>
+            <h1 class="text-xl font-bold text-slate-900 tracking-tight">Choose an account</h1>
+            <p class="text-xs text-slate-500 mt-1">to continue to <strong>Ashoka FMS</strong></p>
+        </div>
+
+        <!-- Google Accounts List -->
+        <div class="space-y-2 mb-6">
+            {% for email in sample_emails %}
+            <form method="post" action="{% url 'portal:google_callback' %}">
+                {% csrf_token %}
+                <input type="hidden" name="email" value="{{ email }}">
+                <button type="submit" 
+                        class="w-full flex items-center justify-between p-3 rounded-2xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50/40 transition-all text-left group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold text-xs flex items-center justify-center shrink-0">
+                            {{ email|slice:":1"|upper }}
+                        </div>
+                        <div>
+                            <div class="font-semibold text-xs text-slate-900 group-hover:text-blue-700">{{ email }}</div>
+                            <div class="text-[10px] text-slate-400 font-mono">Google Verified Identity</div>
+                        </div>
+                    </div>
+                    <span class="material-symbols-outlined text-slate-300 group-hover:text-blue-600 text-lg transition-transform group-hover:translate-x-0.5">chevron_right</span>
+                </button>
+            </form>
+            {% endfor %}
+        </div>
+
+        <!-- Custom Account Entry Option -->
+        <div class="pt-4 border-t border-slate-100">
+            <details class="text-xs text-slate-600 group">
+                <summary class="cursor-pointer font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1.5 select-none py-1">
+                    <span class="material-symbols-outlined text-[16px]">add_circle</span>
+                    <span>Use another Google account</span>
+                </summary>
+                <form method="post" action="{% url 'portal:google_callback' %}" class="mt-3 space-y-2">
+                    {% csrf_token %}
+                    <input type="email" name="email" required placeholder="Enter any Google email address" 
+                           class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">
+                    <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-2 rounded-xl text-xs transition">
+                        Verify &amp; Continue with Google
+                    </button>
+                </form>
+            </details>
+        </div>
+
+        <!-- Footer / Cancel -->
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+            <a href="{% url 'portal:login' %}" class="hover:text-slate-700 transition flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">arrow_back</span>
+                <span>Back to password login</span>
+            </a>
+            <span>English (United States)</span>
+        </div>
+    </div>
+</body>
+</html>
